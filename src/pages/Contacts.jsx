@@ -57,10 +57,10 @@ export default function Contacts() {
             minHeight: '100vh',
             py: 4,
             px: { xs: 2, md: 6 },
-            background: 'linear-gradient(135deg, #0a0a40, #2c005f)',
-            color: '#ffeb3b'
+            background: '#f9f9f9',
+            color: 'text.primary'
         }}>
-            <Typography variant="h4" fontWeight="bold" gutterBottom sx={{ color: '#ffeb3b' }}>
+            <Typography variant="h4" fontWeight="bold" gutterBottom>
                 Contacts
             </Typography>
 
@@ -70,22 +70,16 @@ export default function Contacts() {
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     size="small"
-                    sx={{
-                        input: { color: '#ffeb3b' },
-                        '& .MuiOutlinedInput-root': {
-                            '& fieldset': { borderColor: '#aefc2f' },
-                            '&:hover fieldset': { borderColor: '#ffeb3b' }
-                        }
-                    }}
+                    variant="outlined"
                 />
                 <Button
                     variant="contained"
                     startIcon={<Add />}
                     onClick={handleAdd}
                     sx={{
-                        bgcolor: '#6a1b9a',
-                        color: '#ffeb3b',
-                        '&:hover': { bgcolor: '#8e24aa', boxShadow: '0px 0px 10px #ffeb3b' }
+                        bgcolor: 'primary.main',
+                        color: '#fff',
+                        '&:hover': { bgcolor: 'primary.dark' }
                     }}
                 >
                     Add Contact
@@ -93,31 +87,24 @@ export default function Contacts() {
                 <Button
                     variant="outlined"
                     onClick={loadContacts}
-                    sx={{
-                        borderColor: '#aefc2f',
-                        color: '#aefc2f',
-                        '&:hover': { borderColor: '#ffeb3b', color: '#ffeb3b' }
-                    }}
                 >
                     Search
                 </Button>
             </Box>
 
             <Paper sx={{
-                boxShadow: 'inset 0px 14px 1px rgba(155, 0, 255, 0.5)',
+                boxShadow: 2,
                 borderRadius: '10px',
                 overflow: 'hidden',
-                background: 'rgba(20,20,40,0.95)',
-                color: '#aefc2f'
+                background: '#fff'
             }}>
                 <Table>
                     <TableHead sx={{
-                        background: 'linear-gradient(90deg, #1a237e, #4a148c)',
+                        background: '#f5f5f5',
                         '& th': {
-                            color: '#ffeb3b',
+                            color: 'text.primary',
                             fontWeight: 'bold',
-                            fontSize: '1rem',
-                            textShadow: '1px 1px 5px rgba(0,0,0,0.8)'
+                            fontSize: '1rem'
                         }
                     }}>
                         <TableRow>
@@ -133,13 +120,11 @@ export default function Contacts() {
                             <TableRow
                                 key={c.id}
                                 sx={{
-                                    bgcolor: '#2c003e',
+                                    bgcolor: '#fff',
                                     transition: 'all 0.3s ease',
                                     '&:hover': {
-                                        transform: 'scale(1.02)',
-                                        boxShadow: 'inset 0px 4px 1px rgba(0, 255, 150, 0.8)'
-                                    },
-                                    '& td': { color: '#aefc2f' }
+                                        background: '#f0f4ff'
+                                    }
                                 }}
                             >
                                 <TableCell>{c.name}</TableCell>
@@ -147,13 +132,13 @@ export default function Contacts() {
                                 <TableCell>{c.phone}</TableCell>
                                 <TableCell>{c.address}</TableCell>
                                 <TableCell>
-                                    <IconButton onClick={() => handleEdit(c)} sx={{ color: '#ffeb3b' }}>
+                                    <IconButton onClick={() => handleEdit(c)} color="primary">
                                         <Edit />
                                     </IconButton>
                                     <IconButton color="error" onClick={() => handleDelete(c.id)}>
                                         <Delete />
                                     </IconButton>
-                                    <IconButton sx={{ color: '#29b6f6' }} onClick={() => navigate(`/contacts/${c.id}/comms`)}>
+                                    <IconButton color="info" onClick={() => navigate(`/contacts/${c.id}/comms`)}>
                                         <Message />
                                     </IconButton>
                                 </TableCell>

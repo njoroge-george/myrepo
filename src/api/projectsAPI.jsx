@@ -1,8 +1,7 @@
 // src/api/projectsApi.js
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:5000/api/projects';
-
+const API_URL = import.meta.env.VITE_PROJECTS_API_URL;
 export const getProjects = async () => {
     const res = await axios.get(BASE_URL);
     return res.data;

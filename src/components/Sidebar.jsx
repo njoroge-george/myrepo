@@ -14,6 +14,8 @@ import ContactsIcon from '@mui/icons-material/Contacts';
 import BuildIcon from '@mui/icons-material/Build';
 import ListAltIcon from '@mui/icons-material/ListAlt';
 import FoodIcon from '@mui/icons-material/Settings';
+import SettingsIcon from '@mui/icons-material/Settings';
+import ChatIcon from '@mui/icons-material/Settings';
 
 const navItems = [
   { text: 'Overview', path: '/overview', icon: <DashboardIcon /> },
@@ -27,6 +29,8 @@ const navItems = [
   { text: 'To Do', path: '/to_do', icon: <ListAltIcon /> },
   { text: 'Recipe', path: '/recipe', icon: <WorkIcon /> },
     { text: 'Portfolio', path: '/portfolio', icon: <FoodIcon /> },
+    { text: 'Settings', path: '/settings', icon: <SettingsIcon /> },
+    { text: 'Chat', path: '/chat', icon: <ChatIcon /> },
 ];
 
 const Sidebar = () => {

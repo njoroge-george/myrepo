@@ -1,4 +1,3 @@
-// src/pages/Journal.jsx
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import {
     Box,
@@ -9,7 +8,6 @@ import {
     Grid,
     IconButton,
     Chip,
-    useTheme,
     MenuItem,
     Select,
     FormControl,
@@ -19,7 +17,6 @@ import {
 import { Edit, Delete, Save, Cancel, StarBorder, Star } from '@mui/icons-material';
 import { getNotes, addNote, updateNote, deleteNote } from '../api/notesAPI.jsx';
 import { motion } from 'framer-motion';
-
 import { Bar, Line } from 'react-chartjs-2';
 import {
     Chart as ChartJS,
@@ -38,7 +35,6 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, PointElement, LineEleme
 function NoteCard({ note, onUpdate, onDelete, onTogglePin }) {
     const [isEditing, setIsEditing] = useState(false);
     const [editText, setEditText] = useState(note.text);
-    const theme = useTheme();
 
     const handleSave = () => {
         onUpdate(note.id, { text: editText });
@@ -50,12 +46,6 @@ function NoteCard({ note, onUpdate, onDelete, onTogglePin }) {
         setEditText(note.text);
     };
 
-    const noteCardVariants = {
-        hidden: { opacity: 0, y: 20 },
-        visible: { opacity: 1, y: 0 },
-        exit: { opacity: 0, y: -20 },
-    };
-
     const tagColor = {
         idea: 'primary',
         task: 'secondary',
@@ -64,15 +54,15 @@ function NoteCard({ note, onUpdate, onDelete, onTogglePin }) {
     };
 
     return (
-        <motion.div variants={noteCardVariants}>
+        <motion.div>
             <Paper
                 sx={{
                     p: 2,
-                    position: 'relative',
-                    borderLeft: `5px solid ${theme.palette[tagColor[note.tags] || 'primary'].main}`,
-                    background: 'linear-gradient(145deg, rgba(40,0,60,0.9), rgba(0,0,50,0.9))',
-                    color: '#fff',
-                    boxShadow: 'inset 0 10px 1px rgba(255,255,0,0.4), inset 0 -10px 1px rgba(0,255,0,0.3)',
+                    borderLeft: `5px solid`,
+                    borderColor: tagColor[note.tags] ? `${tagColor[note.tags]}.main` : 'primary.main',
+                    background: '#fff',
+                    color: 'text.primary',
+                    boxShadow: 2,
                     borderRadius: 3,
                     display: 'flex',
                     flexDirection: 'column',
@@ -80,12 +70,12 @@ function NoteCard({ note, onUpdate, onDelete, onTogglePin }) {
                     transition: 'transform 0.2s ease',
                     '&:hover': {
                         transform: 'scale(1.02)',
-                        boxShadow: 'inset 0 10px 1px rgba(255,255,0,0.6), inset 0 -10px 1px rgba(0,255,0,0.4)',
+                        boxShadow: 4,
                     },
                 }}
             >
                 <Box sx={{ flexGrow: 1 }}>
-                    <Typography variant="body2" sx={{ color: '#9affff' }} gutterBottom>
+                    <Typography variant="body2" color="text.secondary" gutterBottom>
                         {new Date(note.date).toLocaleString()}
                     </Typography>
                     <Chip
@@ -93,7 +83,7 @@ function NoteCard({ note, onUpdate, onDelete, onTogglePin }) {
                         color={tagColor[note.tags] || 'primary'}
                         variant="outlined"
                         size="small"
-                        sx={{ my: 1, color: '#fff' }}
+                        sx={{ my: 1 }}
                     />
                     {isEditing ? (
                         <TextField
@@ -106,29 +96,29 @@ function NoteCard({ note, onUpdate, onDelete, onTogglePin }) {
                             autoFocus
                         />
                     ) : (
-                        <Typography sx={{ my: 1, whiteSpace: 'pre-wrap', color: '#ffffa5' }}>{note.text}</Typography>
+                        <Typography sx={{ my: 1, whiteSpace: 'pre-wrap' }}>{note.text}</Typography>
                     )}
                 </Box>
                 <Box sx={{ mt: 1, alignSelf: 'flex-end' }}>
                     {isEditing ? (
                         <>
-                            <IconButton onClick={handleSave} size="small">
-                                <Save sx={{ color: '#aaffaa' }} />
+                            <IconButton onClick={handleSave} size="small" color="success">
+                                <Save />
                             </IconButton>
-                            <IconButton onClick={handleCancel} size="small">
-                                <Cancel sx={{ color: '#ffaaaa' }} />
+                            <IconButton onClick={handleCancel} size="small" color="error">
+                                <Cancel />
                             </IconButton>
                         </>
                     ) : (
                         <>
-                            <IconButton onClick={() => setIsEditing(true)} size="small">
-                                <Edit sx={{ color: '#ffff88' }} />
+                            <IconButton onClick={() => setIsEditing(true)} size="small" color="primary">
+                                <Edit />
                             </IconButton>
-                            <IconButton onClick={() => onDelete(note.id)} size="small">
-                                <Delete sx={{ color: '#ff8888' }} />
+                            <IconButton onClick={() => onDelete(note.id)} size="small" color="error">
+                                <Delete />
                             </IconButton>
-                            <IconButton onClick={() => onTogglePin(note.id, note.pinned)} size="small">
-                                {note.pinned ? <Star sx={{ color: 'gold' }} /> : <StarBorder sx={{ color: '#ffff88' }} />}
+                            <IconButton onClick={() => onTogglePin(note.id, note.pinned)} size="small" color="warning">
+                                {note.pinned ? <Star /> : <StarBorder />}
                             </IconButton>
                         </>
                     )}
@@ -145,9 +135,7 @@ export default function Journal() {
     const [searchTerm, setSearchTerm] = useState('');
     const [isLoading, setIsLoading] = useState(true);
 
-    // --- Chart Data ---
-
-    // Weekly count of notes by tag type for bar chart (mock example)
+    // Chart Data
     const notesByTag = notes.reduce(
         (acc, note) => {
             acc[note.tags] = (acc[note.tags] || 0) + 1;
@@ -168,10 +156,10 @@ export default function Journal() {
                     notesByTag.personal,
                 ],
                 backgroundColor: [
-                    'rgba(255, 255, 0, 0.7)', // neon yellow
-                    'rgba(0, 255, 0, 0.7)',   // neon green
-                    'rgba(255, 0, 0, 0.7)',   // neon red
-                    'rgba(0, 150, 255, 0.7)', // neon blue
+                    '#1976d2', // primary
+                    '#9c27b0', // secondary
+                    '#d32f2f', // error
+                    '#388e3c', // success
                 ],
                 borderRadius: 6,
             },
@@ -182,17 +170,15 @@ export default function Journal() {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-            legend: { labels: { color: '#faffb8' } },
-            title: { display: true, text: 'Notes Count by Tag', color: '#aaffaa', font: { size: 18 } },
+            legend: { labels: { color: '#222' } },
+            title: { display: true, text: 'Notes Count by Tag', color: '#222', font: { size: 18 } },
         },
         scales: {
-            x: { ticks: { color: '#ffff88' }, grid: { color: 'rgba(255,255,0,0.2)' } },
-            y: { ticks: { color: '#aaff88' }, grid: { color: 'rgba(0,255,0,0.2)' }, beginAtZero: true },
+            x: { ticks: { color: '#222' }, grid: { color: 'rgba(0,0,0,0.05)' } },
+            y: { ticks: { color: '#222' }, grid: { color: 'rgba(0,0,0,0.05)' }, beginAtZero: true },
         },
     };
 
-    // Line chart for notes added over time (mock: last 7 days)
-    // Create a date-count map for the last 7 days
     const today = new Date();
     const last7Days = Array.from({ length: 7 }).map((_, i) => {
         const d = new Date(today);
@@ -210,8 +196,8 @@ export default function Journal() {
             {
                 label: 'Notes Added',
                 data: notesByDate,
-                borderColor: 'rgba(0, 255, 0, 0.8)', // neon green
-                backgroundColor: 'rgba(0, 255, 0, 0.3)',
+                borderColor: '#1976d2',
+                backgroundColor: 'rgba(25, 118, 210, 0.1)',
                 fill: true,
                 tension: 0.4,
                 pointRadius: 5,
@@ -223,12 +209,12 @@ export default function Journal() {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-            legend: { labels: { color: '#faffb8' } },
-            title: { display: true, text: 'Notes Added (Last 7 Days)', color: '#aaffaa', font: { size: 18 } },
+            legend: { labels: { color: '#222' } },
+            title: { display: true, text: 'Notes Added (Last 7 Days)', color: '#222', font: { size: 18 } },
         },
         scales: {
-            x: { ticks: { color: '#ffff88' }, grid: { color: 'rgba(0,255,0,0.2)' } },
-            y: { ticks: { color: '#aaff88' }, grid: { color: 'rgba(255,255,0,0.2)' }, beginAtZero: true },
+            x: { ticks: { color: '#222' }, grid: { color: 'rgba(0,0,0,0.05)' } },
+            y: { ticks: { color: '#222' }, grid: { color: 'rgba(0,0,0,0.05)' }, beginAtZero: true },
         },
     };
 
@@ -311,40 +297,39 @@ export default function Journal() {
             sx={{
                 p: 3,
                 minHeight: '100vh',
-                background: 'linear-gradient(135deg, #0d0d2b, #2b0030)',
-                color: '#faffb8',
+                background: '#f9f9f9',
+                color: 'text.primary',
             }}
         >
-            <Typography variant="h4" gutterBottom>
+            <Typography variant="h4" gutterBottom fontWeight="bold">
                 Journal
             </Typography>
-            <Typography variant="subtitle1" sx={{ mb: 2, color: '#aaffaa' }}>
+            <Typography variant="subtitle1" sx={{ mb: 2 }}>
                 You have {notes.length} total notes.
             </Typography>
 
-            {/* Charts - full width, fixed height */}
+            {/* Charts */}
             <Grid container spacing={4} mb={5}>
                 <Grid item xs={12} sx={{ height: 320 }}>
                     <Paper
-                        elevation={6}
+                        elevation={3}
                         sx={{
                             p: 3,
-                            background: 'linear-gradient(145deg, rgba(40,0,60,0.9), rgba(0,0,50,0.9))',
-                            boxShadow: 'inset 0 15px 1px rgba(255,255,0,0.6), inset 0 -10px 1px rgba(0,255,0,0.5)',
+                            background: '#fff',
+                            boxShadow: 2,
                             borderRadius: 3,
                         }}
                     >
                         <Bar data={barData} options={barOptions} />
                     </Paper>
                 </Grid>
-
                 <Grid item xs={12} sx={{ height: 320 }}>
                     <Paper
-                        elevation={6}
+                        elevation={3}
                         sx={{
                             p: 3,
-                            background: 'linear-gradient(145deg, rgba(40,0,60,0.9), rgba(0,0,50,0.9))',
-                            boxShadow: 'inset 0 15px 1px rgba(255,255,0,0.6), inset 0 -10px 1px rgba(0,255,0,0.5)',
+                            background: '#fff',
+                            boxShadow: 2,
                             borderRadius: 3,
                         }}
                     >
@@ -354,70 +339,55 @@ export default function Journal() {
             </Grid>
 
             {/* Add Note Input Area */}
-            <Paper
-                sx={{
-                    p: 2,
-                    mb: 4,
-                    borderRadius: 2,
-                    background: 'rgba(2,200,240,0.61)',
-                    boxShadow: 'inset 0 8px 1px rgba(255,55,0,0.94), inset 0 -2px 1px rgba(111,255,0,0.3)',
-                    color: '#fffff8',
-                }}
-            >
-                <Grid container spacing={2} alignItems="center">
-                    <Grid item xs={12} md={9}>
-                        <TextField
-                            fullWidth
-                            multiline
-                            rows={3}
-                            label="What's on your mind?"
-                            value={newNote}
-                            onChange={(e) => setNewNote(e.target.value)}
-                            InputLabelProps={{ style: { color: '#faffb8' } }}
-                            sx={{
-                                input: { color: '#faffb8' }, // Brighten the input text color
-                                '& .MuiInput-underline:after': { borderBottomColor: '#ffffff' },
-                                '& .MuiOutlinedInput-root': {
-                                    '& fieldset': { borderColor: '#ffffff' },
-                                    '&:hover fieldset': { borderColor: '#ffffff' },
-                                    '&.Mui-focused fieldset': { borderColor: '#ffffff' },
-                                },
-                            }}
-                        />
-                    </Grid>
-                    <Grid item xs={12} md={3}>
-                        <FormControl fullWidth>
-                            <InputLabel id="tag-label" sx={{ color: '#ffff88' }}>
-                                Tag
-                            </InputLabel>
-                            <Select
-                                labelId="tag-label"
-                                value={newTag}
-                                onChange={(e) => setNewTag(e.target.value)}
-                                sx={{ color: '#faffb8' }}
+            <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
+                <Paper
+                    sx={{
+                        p: 2,
+                        borderRadius: 2,
+                        background: '#fff',
+                        boxShadow: 2,
+                        width: '100%',
+                        maxWidth: 700,
+                    }}
+                >
+                    <Grid container spacing={2} alignItems="center">
+                        <Grid item xs={12} md={9}>
+                            <TextField
+                                fullWidth
+                                multiline
+                                rows={3}
+                                label="What's on your mind?"
+                                value={newNote}
+                                onChange={(e) => setNewNote(e.target.value)}
+                            />
+                        </Grid>
+                        <Grid item xs={12} md={3}>
+                            <FormControl fullWidth>
+                                <InputLabel id="tag-label">Tag</InputLabel>
+                                <Select
+                                    labelId="tag-label"
+                                    value={newTag}
+                                    onChange={(e) => setNewTag(e.target.value)}
+                                >
+                                    <MenuItem value="idea">Idea</MenuItem>
+                                    <MenuItem value="task">Task</MenuItem>
+                                    <MenuItem value="urgent">Urgent</MenuItem>
+                                    <MenuItem value="personal">Personal</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={12} sx={{ textAlign: 'right' }}>
+                            <Button
+                                variant="contained"
+                                onClick={handleAddNote}
+                                sx={{ fontWeight: 'bold' }}
                             >
-                                <MenuItem value="idea">Idea</MenuItem>
-                                <MenuItem value="task">Task</MenuItem>
-                                <MenuItem value="urgent">Urgent</MenuItem>
-                                <MenuItem value="personal">Personal</MenuItem>
-                            </Select>
-                        </FormControl>
+                                Add Note
+                            </Button>
+                        </Grid>
                     </Grid>
-                    <Grid item xs={12} sx={{ textAlign: 'right' }}>
-                        <Button
-                            variant="contained"
-                            sx={{
-                                background: 'linear-gradient(90deg, #8800ff, #0000aa)',
-                                color: '#faffb8',
-                                boxShadow: 'inset 0 4px 1px rgba(2,222,0,0.96)',
-                            }}
-                            onClick={handleAddNote}
-                        >
-                            Add Note
-                        </Button>
-                    </Grid>
-                </Grid>
-            </Paper>
+                </Paper>
+            </Box>
 
             {/* Search and Export */}
             <Grid container spacing={2} sx={{ mb: 3 }} alignItems="center">
@@ -428,17 +398,11 @@ export default function Journal() {
                         variant="outlined"
                         size="small"
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        sx={{ input: { color: '#faffb8' } }}
                     />
                 </Grid>
                 <Grid item xs={12} md={3} sx={{ textAlign: 'right' }}>
                     <Button
                         variant="outlined"
-                        sx={{
-                            color: '#ffff88',
-                            borderColor: '#ffff88',
-                            boxShadow: 'inset 0 10px 1px rgba(255,255,0,0.6)',
-                        }}
                         onClick={exportNotes}
                     >
                         Export All Notes

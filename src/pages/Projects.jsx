@@ -72,18 +72,31 @@ export default function Projects() {
         datasets: [{
             label: 'Number of Projects',
             data: [statusCounts.todo || 0, statusCounts.inProgress || 0, statusCounts.done || 0],
-            backgroundColor: ['#ffc107', '#2196f3', '#4caf50'],
+            backgroundColor: ['#bdbdbd', '#90caf9', '#a5d6a7'],
             borderRadius: 6
         }]
     };
-    const barOptions = { responsive: true, maintainAspectRatio: false };
+    const barOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { labels: { color: '#222' } },
+            title: { display: true, text: 'Projects by Status', color: '#222', font: { size: 18 } },
+        },
+        scales: {
+            x: { ticks: { color: '#222' }, grid: { color: 'rgba(0,0,0,0.05)' } },
+            y: { ticks: { color: '#222' }, grid: { color: 'rgba(0,0,0,0.05)' }, beginAtZero: true },
+        },
+    };
 
     return (
-        <Box sx={{ p: 4, minHeight: '100vh', background: 'linear-gradient(135deg, #0d0d2b, #2b0030)', color: '#faffb8' }}>
-            <Typography variant="h4" gutterBottom>Projects</Typography>
+        <Box sx={{ p: 4, minHeight: '100vh', background: '#f9f9f9', color: 'text.primary' }}>
+            <Typography variant="h4" gutterBottom fontWeight="bold" color="primary">
+                Projects
+            </Typography>
 
             {/* Chart */}
-            <Paper elevation={6} sx={{ p: 3, mb: 5, height: 350, background: '#fff', borderRadius: 4 }}>
+            <Paper elevation={3} sx={{ p: 3, mb: 5, height: 350, background: '#fff', borderRadius: 4 }}>
                 <Bar data={barData} options={barOptions} />
             </Paper>
 
@@ -95,9 +108,10 @@ export default function Projects() {
                         p: 3,
                         maxWidth: 500,
                         margin: 'auto',
-                        background: 'rgba(34, 139, 34, 0.8)', // Forest Green for a calm, friendly tone
+                        background: '#fff',
                         borderRadius: 3,
-                        boxShadow: 3,
+                        boxShadow: 2,
+                        color: 'text.primary'
                     }}>
                         <form onSubmit={handleSubmit}>
                             <TextField
@@ -108,12 +122,6 @@ export default function Projects() {
                                 onChange={handleChange}
                                 required
                                 sx={{ mb: 2 }}
-                                InputProps={{
-                                    sx: {
-                                        backgroundColor: '#f0f8ff', // Light Cyan background for input clarity
-                                        borderRadius: 1,
-                                    }
-                                }}
                             />
                             <TextField
                                 fullWidth
@@ -124,12 +132,6 @@ export default function Projects() {
                                 multiline
                                 rows={3}
                                 sx={{ mb: 2 }}
-                                InputProps={{
-                                    sx: {
-                                        backgroundColor: '#f0f8ff',
-                                        borderRadius: 1,
-                                    }
-                                }}
                             />
                             <TextField
                                 fullWidth
@@ -139,33 +141,17 @@ export default function Projects() {
                                 onChange={handleChange}
                                 type="number"
                                 sx={{ mb: 2 }}
-                                InputProps={{
-                                    sx: {
-                                        backgroundColor: '#f0f8ff',
-                                        borderRadius: 1,
-                                    }
-                                }}
                             />
                             <FormControl fullWidth sx={{ mb: 2 }}>
-                                <InputLabel sx={{ color: '#006400' }}>Status</InputLabel>
+                                <InputLabel>Status</InputLabel>
                                 <Select
                                     name="status"
                                     value={form.status}
                                     onChange={handleChange}
-                                    sx={{
-                                        backgroundColor: '#f0f8ff',
-                                        borderRadius: 1,
-                                        '& .MuiOutlinedInput-notchedOutline': {
-                                            borderColor: '#006400',
-                                        },
-                                        '&:hover .MuiOutlinedInput-notchedOutline': {
-                                            borderColor: '#228B22',
-                                        }
-                                    }}
                                 >
-                                    <MenuItem value="todo" sx={{ color: '#006400' }}>To Do</MenuItem>
-                                    <MenuItem value="inProgress" sx={{ color: '#006400' }}>In Progress</MenuItem>
-                                    <MenuItem value="done" sx={{ color: '#006400' }}>Done</MenuItem>
+                                    <MenuItem value="todo">To Do</MenuItem>
+                                    <MenuItem value="inProgress">In Progress</MenuItem>
+                                    <MenuItem value="done">Done</MenuItem>
                                 </Select>
                             </FormControl>
                             <TextField
@@ -176,12 +162,6 @@ export default function Projects() {
                                 onChange={handleChange}
                                 type="number"
                                 sx={{ mb: 2 }}
-                                InputProps={{
-                                    sx: {
-                                        backgroundColor: '#f0f8ff',
-                                        borderRadius: 1,
-                                    }
-                                }}
                             />
                             <TextField
                                 fullWidth
@@ -192,12 +172,6 @@ export default function Projects() {
                                 onChange={handleChange}
                                 sx={{ mb: 2 }}
                                 InputLabelProps={{ shrink: true }}
-                                InputProps={{
-                                    sx: {
-                                        backgroundColor: '#f0f8ff',
-                                        borderRadius: 1,
-                                    }
-                                }}
                             />
                             <TextField
                                 fullWidth
@@ -208,21 +182,16 @@ export default function Projects() {
                                 onChange={handleChange}
                                 sx={{ mb: 2 }}
                                 InputLabelProps={{ shrink: true }}
-                                InputProps={{
-                                    sx: {
-                                        backgroundColor: '#f0f8ff',
-                                        borderRadius: 1,
-                                    }
-                                }}
                             />
                             <Button
                                 type="submit"
                                 variant="contained"
-                                color="success"
                                 fullWidth
                                 sx={{
-                                    backgroundColor: '#4CAF50', // Green for positive action
-                                    '&:hover': { backgroundColor: '#45a049' },
+                                    fontWeight: 'bold',
+                                    bgcolor: 'primary.main',
+                                    color: '#fff',
+                                    '&:hover': { bgcolor: 'primary.dark' },
                                 }}
                             >
                                 {editId ? "Update Project" : "Add Project"}
@@ -237,30 +206,33 @@ export default function Projects() {
                         p: 3,
                         maxHeight: 540,
                         overflowY: 'auto',
-                        background: 'rgba(25, 25, 112, 0.8)', // Midnight Blue for a professional look
+                        background: '#fff',
                         borderRadius: 3,
-                        boxShadow: 3,
+                        boxShadow: 2,
+                        color: 'text.primary'
                     }}>
-                        <Typography variant="h6" gutterBottom sx={{ color: '#fff' }}>Your Projects</Typography>
+                        <Typography variant="h6" gutterBottom fontWeight="bold">
+                            Your Projects
+                        </Typography>
                         <List>
                             {projects.map((proj) => (
                                 <ListItem
                                     key={proj.id}
                                     sx={{
-                                        borderBottom: '1px solid rgba(255, 255, 0, 0.2)',
-                                        '&:hover': { backgroundColor: 'rgba(255, 255, 255, 0.1)' },
+                                        borderBottom: '1px solid #eee',
+                                        '&:hover': { backgroundColor: '#f5f5f5' },
                                     }}
                                 >
                                     <ListItemText
                                         primary={proj.title}
                                         secondary={`Status: ${proj.status} | Budget: ${proj.budget} | Progress: ${proj.progress}%`}
-                                        primaryTypographyProps={{ style: { color: '#fff' } }}
-                                        secondaryTypographyProps={{ style: { color: '#ccc' } }}
+                                        primaryTypographyProps={{ style: { color: '#222' } }}
+                                        secondaryTypographyProps={{ style: { color: '#666' } }}
                                     />
                                     <Button
                                         sx={{ mx: 1 }}
                                         variant="outlined"
-                                        color="info"
+                                        color="primary"
                                         onClick={() => handleEdit(proj)}
                                     >
                                         Edit

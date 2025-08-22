@@ -65,15 +65,12 @@ function Learning() {
 
     try {
       if (form.id) {
-        // Update
         await axios.put(`${API_URL}/${entity}/${form.id}`, form);
         setData(prev => prev.map(item => (item.id === form.id ? form : item)));
       } else {
-        // Create
         const res = await axios.post(`${API_URL}/${entity}`, form);
         setData(prev => [res.data, ...prev]);
       }
-      // Reset form
       if (entity === 'courses') setCourseForm({ id: null, name: '', description: '' });
       if (entity === 'achievements') setAchievementForm({ id: null, title: '', description: '' });
       if (entity === 'resources') setResourceForm({ id: null, title: '', url: '' });
@@ -101,94 +98,57 @@ function Learning() {
 
   return (
       <Box
-          p={3}
-          minWidth='100vw'
-          mx="auto"
           sx={{
-            position: 'relative',
-            zIndex: 1,
-            overflow: 'hidden',
+            p: 4,
             minHeight: '100vh',
-            background: 'linear-gradient(-135deg, #000000, #2b0030)',
-            backgroundSize: '600% 600%',
-            animation: 'gradientShift 30s ease infinite',
-            borderRadius: 2,
-            boxShadow: '0 0 30px rgba(0,0,0,0.7)',
-            transformStyle: 'preserve-3d',
-            perspective: 1000,
-            color: '#fff',
+            background: '#f9f9f9',
+            color: 'text.primary',
           }}
       >
-      {/*  <style>{`*/}
-      {/*  @keyframes gradientShift {*/}
-      {/*    0% {background-position: 0% 50%;}*/}
-      {/*    50% {background-position: 100% 50%;}*/}
-      {/*    100% {background-position: 0% 50%;}*/}
-      {/*  }*/}
-      {/*`}</style>*/}
-
         <Typography
-            variant="h3"
+            variant="h4"
             mb={4}
-            sx={{
-              color: '#fff',
-              textShadow: 'inset 0 0 10px rgba(255,255,255,0.5)',
-              textAlign: 'center',
-              fontWeight: 'bold',
-            }}
+            fontWeight="bold"
+            align="center"
+            color="primary"
         >
           Learning Management
-        </Typography>Notes
+        </Typography>
 
-        <Grid container spacing={2}>
+        <Grid container spacing={4} justifyContent="center">
           {/* Courses Section */}
           <Grid item xs={12} md={6}>
-            <Paper sx={{ p: 3, background: '#318', borderRadius:  5 }}>
-              <Typography
-                  variant="h5"
-                  mb={2}
-                  sx={{ color: '#fff'}}
-              >
+            <Paper sx={{ p: 3, background: '#fff', borderRadius: 4, boxShadow: 2 }}>
+              <Typography variant="h5" mb={2} fontWeight="bold" color="primary">
                 Courses
               </Typography>
-
-              <Box mb={3} style={{ overflowX: 'auto' }}>
-                <Table size="small" sx={{ color: '#fff' }}>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell sx={{ color: '#fff' }}>Name</TableCell>
-                      <TableCell sx={{ color: '#fff' }}>Description</TableCell>
-                      <TableCell align="right" sx={{ color: '#fff' }}>Actions</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {courses.map(c => (
-                        <TableRow key={c.id}>
-                          <TableCell>{c.name}</TableCell>
-                          <TableCell>{c.description}</TableCell>
-                          <TableCell align="right">
-                            <IconButton sx={{ color: '#90caf9' }} onClick={() => handleEdit(c, setCourseForm)}>
-                              <Edit />
-                            </IconButton>
-                            <IconButton
-                                sx={{ color: '#f44336' }}
-                                onClick={() => handleDelete('courses', c.id, setCourses)}
-                            >
-                              <Delete />
-                            </IconButton>
-                          </TableCell>
-                        </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </Box>
-
-              <Box>
-                <Typography
-                    variant="subtitle1"
-                    mb={1}
-                    sx={{ color: '#fff', mb: 1 }}
-                >
+              <Table size="small">
+                <TableHead>
+                  <TableRow>
+                    <TableCell><b>Name</b></TableCell>
+                    <TableCell><b>Description</b></TableCell>
+                    <TableCell align="right"><b>Actions</b></TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {courses.map(c => (
+                      <TableRow key={c.id}>
+                        <TableCell>{c.name}</TableCell>
+                        <TableCell>{c.description}</TableCell>
+                        <TableCell align="right">
+                          <IconButton color="primary" onClick={() => handleEdit(c, setCourseForm)}>
+                            <Edit />
+                          </IconButton>
+                          <IconButton color="error" onClick={() => handleDelete('courses', c.id, setCourses)}>
+                            <Delete />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              <Box mt={2}>
+                <Typography variant="subtitle1" mb={1}>
                   {courseForm.id ? 'Edit Course' : 'Add New Course'}
                 </Typography>
                 <TextField
@@ -196,7 +156,7 @@ function Learning() {
                     value={courseForm.name}
                     onChange={(e) => setCourseForm((f) => ({ ...f, name: e.target.value }))}
                     fullWidth
-                    sx={{ mb: 1, input: { color: '#fff' }, label: { color: '#bbb' } }}
+                    sx={{ mb: 1 }}
                     InputLabelProps={{ shrink: true }}
                 />
                 <TextField
@@ -206,13 +166,14 @@ function Learning() {
                     fullWidth
                     multiline
                     rows={3}
-                    sx={{ mb: 1, input: { color: '#fff' }, label: { color: '#bbb' } }}
+                    sx={{ mb: 1 }}
                     InputLabelProps={{ shrink: true }}
                 />
                 <Button
                     variant="contained"
-                    sx={{ backgroundColor: '#2196f3', ':hover': { backgroundColor: '#1976d2' } }}
+                    color="primary"
                     onClick={() => handleSave('courses', courseForm, setCourseForm, setCourses)}
+                    fullWidth
                 >
                   {courseForm.id ? 'Update' : 'Add'}
                 </Button>
@@ -222,21 +183,16 @@ function Learning() {
 
           {/* Achievements Section */}
           <Grid item xs={12} md={6}>
-            <Paper sx={{ p: 3, background: '#318', borderRadius:  5 }}>
-              <Typography
-                  variant="h5"
-                  mb={2}
-                  sx={{ color: '#fff' }}
-              >
+            <Paper sx={{ p: 3, background: '#fff', borderRadius: 4, boxShadow: 2 }}>
+              <Typography variant="h5" mb={2} fontWeight="bold" color="primary">
                 Achievements
               </Typography>
-
-              <Table size="small" sx={{ color: '#fff' }}>
+              <Table size="small">
                 <TableHead>
                   <TableRow>
-                    <TableCell sx={{ color: '#fff' }}>Title</TableCell>
-                    <TableCell sx={{ color: '#fff' }}>Description</TableCell>
-                    <TableCell align="right" sx={{ color: '#fff' }}>Actions</TableCell>
+                    <TableCell><b>Title</b></TableCell>
+                    <TableCell><b>Description</b></TableCell>
+                    <TableCell align="right"><b>Actions</b></TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -245,13 +201,10 @@ function Learning() {
                         <TableCell>{a.title}</TableCell>
                         <TableCell>{a.description}</TableCell>
                         <TableCell align="right">
-                          <IconButton sx={{ color: '#90caf9' }} onClick={() => handleEdit(a, setAchievementForm)}>
+                          <IconButton color="primary" onClick={() => handleEdit(a, setAchievementForm)}>
                             <Edit />
                           </IconButton>
-                          <IconButton
-                              sx={{ color: '#f44336' }}
-                              onClick={() => handleDelete('achievements', a.id, setAchievements)}
-                          >
+                          <IconButton color="error" onClick={() => handleDelete('achievements', a.id, setAchievements)}>
                             <Delete />
                           </IconButton>
                         </TableCell>
@@ -259,13 +212,8 @@ function Learning() {
                   ))}
                 </TableBody>
               </Table>
-
-              <Box>
-                <Typography
-                    variant="subtitle1"
-                    mb={1}
-                    sx={{ color: '#fff', mb: 1 }}
-                >
+              <Box mt={2}>
+                <Typography variant="subtitle1" mb={1}>
                   {achievementForm.id ? 'Edit Achievement' : 'Add New Achievement'}
                 </Typography>
                 <TextField
@@ -273,7 +221,7 @@ function Learning() {
                     value={achievementForm.title}
                     onChange={(e) => setAchievementForm((f) => ({ ...f, title: e.target.value }))}
                     fullWidth
-                    sx={{ mb: 1, input: { color: '#fff' }, label: { color: '#bbb' } }}
+                    sx={{ mb: 1 }}
                     InputLabelProps={{ shrink: true }}
                 />
                 <TextField
@@ -283,13 +231,14 @@ function Learning() {
                     fullWidth
                     multiline
                     rows={3}
-                    sx={{ mb: 1, input: { color: '#fff' }, label: { color: '#bbb' } }}
+                    sx={{ mb: 1 }}
                     InputLabelProps={{ shrink: true }}
                 />
                 <Button
                     variant="contained"
-                    sx={{ backgroundColor: '#2196f3', ':hover': { backgroundColor: '#1976d2' } }}
+                    color="primary"
                     onClick={() => handleSave('achievements', achievementForm, setAchievementForm, setAchievements)}
+                    fullWidth
                 >
                   {achievementForm.id ? 'Update' : 'Add'}
                 </Button>
@@ -299,21 +248,16 @@ function Learning() {
 
           {/* Resources Section */}
           <Grid item xs={12} md={6}>
-            <Paper sx={{ p: 3, background: '#318', borderRadius:  5 }}>
-              <Typography
-                  variant="h5"
-                  mb={2}
-                  sx={{ color: '#fff'}}
-              >
+            <Paper sx={{ p: 3, background: '#fff', borderRadius: 4, boxShadow: 2 }}>
+              <Typography variant="h5" mb={2} fontWeight="bold" color="primary">
                 Resources
               </Typography>
-
-              <Table size="small" sx={{ color: '#fff' }}>
+              <Table size="small">
                 <TableHead>
                   <TableRow>
-                    <TableCell sx={{ color: '#fff' }}>Title</TableCell>
-                    <TableCell sx={{ color: '#fff' }}>URL</TableCell>
-                    <TableCell align="right" sx={{ color: '#fff' }}>Actions</TableCell>
+                    <TableCell><b>Title</b></TableCell>
+                    <TableCell><b>URL</b></TableCell>
+                    <TableCell align="right"><b>Actions</b></TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -325,19 +269,16 @@ function Learning() {
                               href={r.url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              style={{ color: '#90caf9' }}
+                              style={{ color: '#1976d2', textDecoration: 'underline' }}
                           >
                             {r.url}
                           </a>
                         </TableCell>
                         <TableCell align="right">
-                          <IconButton sx={{ color: '#90caf9' }} onClick={() => handleEdit(r, setResourceForm)}>
+                          <IconButton color="primary" onClick={() => handleEdit(r, setResourceForm)}>
                             <Edit />
                           </IconButton>
-                          <IconButton
-                              sx={{ color: '#f44336' }}
-                              onClick={() => handleDelete('resources', r.id, setResources)}
-                          >
+                          <IconButton color="error" onClick={() => handleDelete('resources', r.id, setResources)}>
                             <Delete />
                           </IconButton>
                         </TableCell>
@@ -345,13 +286,8 @@ function Learning() {
                   ))}
                 </TableBody>
               </Table>
-
-              <Box>
-                <Typography
-                    variant="subtitle1"
-                    mb={1}
-                    sx={{ color: '#fff' }}
-                >
+              <Box mt={2}>
+                <Typography variant="subtitle1" mb={1}>
                   {resourceForm.id ? 'Edit Resource' : 'Add New Resource'}
                 </Typography>
                 <TextField
@@ -359,7 +295,7 @@ function Learning() {
                     value={resourceForm.title}
                     onChange={(e) => setResourceForm((f) => ({ ...f, title: e.target.value }))}
                     fullWidth
-                    sx={{ mb: 1, input: { color: '#fff' }, label: { color: '#bbb' } }}
+                    sx={{ mb: 1 }}
                     InputLabelProps={{ shrink: true }}
                 />
                 <TextField
@@ -367,13 +303,14 @@ function Learning() {
                     value={resourceForm.url}
                     onChange={(e) => setResourceForm((f) => ({ ...f, url: e.target.value }))}
                     fullWidth
-                    sx={{ mb: 1, input: { color: '#fff' }, label: { color: '#bbb' } }}
+                    sx={{ mb: 1 }}
                     InputLabelProps={{ shrink: true }}
                 />
                 <Button
                     variant="contained"
-                    sx={{ backgroundColor: '#2196f3', ':hover': { backgroundColor: '#1976d2' } }}
+                    color="primary"
                     onClick={() => handleSave('resources', resourceForm, setResourceForm, setResources)}
+                    fullWidth
                 >
                   {resourceForm.id ? 'Update' : 'Add'}
                 </Button>
@@ -383,21 +320,16 @@ function Learning() {
 
           {/* Practice Logs Section */}
           <Grid item xs={12} md={6}>
-            <Paper sx={{ p: 3, background: '#318', borderRadius:  5 }}>
-              <Typography
-                  variant="h5"
-                  mb={2}
-                  sx={{ color: '#fff'}}
-              >
+            <Paper sx={{ p: 3, background: '#fff', borderRadius: 4, boxShadow: 2 }}>
+              <Typography variant="h5" mb={2} fontWeight="bold" color="primary">
                 Practice Logs
               </Typography>
-
-              <Table size="small" sx={{ color: '#fff' }}>
+              <Table size="small">
                 <TableHead>
                   <TableRow>
-                    <TableCell sx={{ color: '#fff' }}>Activity</TableCell>
-                    <TableCell sx={{ color: '#fff' }}>Date</TableCell>
-                    <TableCell align="right" sx={{ color: '#fff' }}>Actions</TableCell>
+                    <TableCell><b>Activity</b></TableCell>
+                    <TableCell><b>Date</b></TableCell>
+                    <TableCell align="right"><b>Actions</b></TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -406,13 +338,10 @@ function Learning() {
                         <TableCell>{p.activity}</TableCell>
                         <TableCell>{new Date(p.date).toLocaleDateString()}</TableCell>
                         <TableCell align="right">
-                          <IconButton sx={{ color: '#90caf9' }} onClick={() => handleEdit(p, setPracticeLogForm)}>
+                          <IconButton color="primary" onClick={() => handleEdit(p, setPracticeLogForm)}>
                             <Edit />
                           </IconButton>
-                          <IconButton
-                              sx={{ color: '#f44336' }}
-                              onClick={() => handleDelete('practice-logs', p.id, setPracticeLogs)}
-                          >
+                          <IconButton color="error" onClick={() => handleDelete('practice-logs', p.id, setPracticeLogs)}>
                             <Delete />
                           </IconButton>
                         </TableCell>
@@ -420,13 +349,8 @@ function Learning() {
                   ))}
                 </TableBody>
               </Table>
-
-              <Box>
-                <Typography
-                    variant="subtitle1"
-                    mb={1}
-                    sx={{ color: '#fff' }}
-                >
+              <Box mt={2}>
+                <Typography variant="subtitle1" mb={1}>
                   {practiceLogForm.id ? 'Edit Practice Log' : 'Add New Practice Log'}
                 </Typography>
                 <TextField
@@ -434,7 +358,7 @@ function Learning() {
                     value={practiceLogForm.activity}
                     onChange={(e) => setPracticeLogForm((f) => ({ ...f, activity: e.target.value }))}
                     fullWidth
-                    sx={{ mb: 1, input: { color: '#fff' }, label: { color: '#bbb' } }}
+                    sx={{ mb: 1 }}
                     InputLabelProps={{ shrink: true }}
                 />
                 <TextField
@@ -443,13 +367,14 @@ function Learning() {
                     value={practiceLogForm.date ? practiceLogForm.date.slice(0, 10) : ''}
                     onChange={(e) => setPracticeLogForm((f) => ({ ...f, date: e.target.value }))}
                     fullWidth
-                    sx={{ mb: 1, input: { color: '#fff' }, label: { color: '#bbb' } }}
+                    sx={{ mb: 1 }}
                     InputLabelProps={{ shrink: true }}
                 />
                 <Button
                     variant="contained"
-                    sx={{ backgroundColor: '#2196f3', ':hover': { backgroundColor: '#1976d2' } }}
+                    color="primary"
                     onClick={() => handleSave('practice-logs', practiceLogForm, setPracticeLogForm, setPracticeLogs)}
+                    fullWidth
                 >
                   {practiceLogForm.id ? 'Update' : 'Add'}
                 </Button>

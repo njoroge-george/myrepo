@@ -1,7 +1,7 @@
 // src/api/recipesAPI.js
 import axios from "axios";
 
-const API_URL = "http://localhost:5000/api/recipes"; // Change to your backend URL
+const API_URL = import.meta.env.VITE_RECIPE_API_URL;
 
 // Get all recipes
 export const getRecipes = async () => {

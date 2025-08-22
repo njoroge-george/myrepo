@@ -1,7 +1,7 @@
 // src/api/contactsAPI.js
 import axios from 'axios';
 
-const API_BASE = 'http://localhost:5000/api/contacts'; // adjust if backend runs elsewhere
+const API_URL = import.meta.env.VITE_CONTACTS_API_URL;
 
 // Contacts
 export const getContacts = (params = {}) =>

@@ -1,3 +1,4 @@
+// src/pages/Finance.jsx
 import React, { useState, useEffect } from 'react';
 import {
   Box, Typography, Paper, TextField, Button,
@@ -93,50 +94,48 @@ export default function Finance() {
   return (
       <Box sx={{
         minHeight: '100vh',
-        minWidth: '800px',
         py: 4,
         px: { xs: 2, md: 6 },
-        background: 'linear-gradient(135deg, #0a0a40, #2c005f)',
-        color: '#ffeb3b'
+        background: '#f9f9f9',
+        color: 'text.primary'
       }}>
-        <Paper elevation={8} sx={{
+        <Paper elevation={3} sx={{
           p: 4,
           maxWidth: 800,
           mx: 'auto',
           borderRadius: 4,
-          background: 'linear-gradient(135deg, #0a0a40 50%, #202e5f 50%)',
-          boxShadow: 'inset 0px 4px 1px rgba(155, 0, 255, 0.9)',
-          color: '#aefc2f'
+          background: '#fff',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.07)',
+          color: 'text.primary'
         }}>
-          <Typography variant="h4" fontWeight="bold" gutterBottom sx={{ color: '#ffeb3b' }}>
+          <Typography variant="h4" fontWeight="bold" gutterBottom>
             Finance Tracker
           </Typography>
-          <Typography variant="body1" mb={3} sx={{ color: '#000000' }}>
+          <Typography variant="body1" mb={3}>
             Track your income and expenses easily.
           </Typography>
 
           <Box display="flex" flexDirection="column" gap={2} mb={3}>
             <FormControl fullWidth>
-              <InputLabel id="type-label" sx={{ color: '#aefc2f' }}>Type</InputLabel>
+              <InputLabel id="type-label">Type</InputLabel>
               <Select
                   labelId="type-label"
                   value={type}
                   onChange={(e) => setType(e.target.value)}
-                  sx={{ color: '#aefc2f' }}
               >
                 <MenuItem value="income">Income</MenuItem>
                 <MenuItem value="expense">Expense</MenuItem>
               </Select>
             </FormControl>
-            <TextField label="Amount" type="number" value={amount} onChange={(e) => setAmount(e.target.value)} fullWidth sx={{ input: { color: '#ffeb3b' } }} />
-            <TextField label="Category" value={category} onChange={(e) => setCategory(e.target.value)} fullWidth sx={{ input: { color: '#ffeb3b' } }} />
-            <TextField label="Description" value={description} onChange={(e) => setDescription(e.target.value)} fullWidth sx={{ input: { color: '#ffeb3b' } }} />
+            <TextField label="Amount" type="number" value={amount} onChange={(e) => setAmount(e.target.value)} fullWidth />
+            <TextField label="Category" value={category} onChange={(e) => setCategory(e.target.value)} fullWidth />
+            <TextField label="Description" value={description} onChange={(e) => setDescription(e.target.value)} fullWidth />
             <Button variant="contained" onClick={handleAddOrUpdateEntry} size="large"
                     sx={{
-                      bgcolor: '#6a1b9a',
-                      '&:hover': { bgcolor: '#8e24aa', boxShadow: '0px 0px 20px #ffeb3b' },
-                      color: '#ffeb3b',
-                      fontWeight: 'bold'
+                      bgcolor: 'primary.main',
+                      color: '#fff',
+                      fontWeight: 'bold',
+                      '&:hover': { bgcolor: 'primary.dark' }
                     }}>
               {editIndex !== null ? 'Update Entry' : 'Add Entry'}
             </Button>
@@ -144,99 +143,88 @@ export default function Finance() {
         </Paper>
 
         {/* Table View */}
-        <Box mt={5} minWidth={1400} mx="auto">
-          <Typography variant="h5" mb={2} fontWeight="bold" sx={{ color: '#ffeb3b' }}>Your Entries</Typography>
+        <Box mt={5} mx="auto" maxWidth={1400}>
+          <Typography variant="h5" mb={2} fontWeight="bold">
+            Your Entries
+          </Typography>
           {entries.length === 0 ? (
-              <Typography sx={{ color: '#aefc2f' }}>No entries yet.</Typography>
+              <Typography>No entries yet.</Typography>
           ) : (
-            <TableContainer
-              component={Paper}
-              sx={{
-                width: '100%',
-                boxShadow: 'inset 0px 4px 1px rgba(155, 0, 255, 0.5)',
-                borderRadius: '12px',
-                overflow: 'hidden',
-                background: 'linear-gradient(135deg, #0a0a40, #2c005f)',
-                color: '#ffffff',
-                transition: 'all 0.3s ease-in-out',
-                '&:hover': {
-                  boxShadow: '0px 0px 2px rgba(255, 235, 59, 0.5)',
-                  transform: 'scale(1.005)',
-                }
-              }}
-            >
-              <Table sx={{ minWidth: 650 }}>
-                <TableHead sx={{
-                  background: 'linear-gradient(135deg, #1a237e 50%, #4a148c 50%)',
-                  '& th': {
-                    color: '#ffeb3b',
-                    fontWeight: 'bold',
-                    fontSize: '1rem',
-                    textShadow: '0px 0px 1px rgba(255,255,0,0.7)',
-                  }
-                }}>
-                  <TableRow>
-                    <TableCell>Type</TableCell>
-                    <TableCell>Amount</TableCell>
-                    <TableCell>Category</TableCell>
-                    <TableCell>Description</TableCell>
-                    <TableCell>Date</TableCell>
-                    <TableCell>Actions</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {entries
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((entry, index) => (
-                      <TableRow
-                        key={index}
-                        sx={{
-                          bgcolor: entry.type === 'income'
-                            ? 'rgba(0, 200, 150, 0.2)'
-                            : 'rgba(255, 0, 150, 0.15)',
-                          transition: 'all 0.25s ease',
-                          '&:hover': {
-                            transform: 'scale(1.02)',
-                            boxShadow: entry.type === 'income'
-                              ? '0px 0px 15px rgba(0, 255, 150, 0.6)'
-                              : '0px 0px 15px rgba(255, 0, 150, 0.6)',
-                            bgcolor: entry.type === 'income'
-                              ? 'rgba(0, 255, 150, 0.25)'
-                              : 'rgba(255, 0, 150, 0.2)',
-                          },
-                          '& td': { color: '#ffffff' }
-                        }}
-                      >
-                        <TableCell>{entry.type.toUpperCase()}</TableCell>
-                        <TableCell>${parseFloat(entry.amount).toFixed(2)}</TableCell>
-                        <TableCell>{entry.category}</TableCell>
-                        <TableCell>{entry.description}</TableCell>
-                        <TableCell>{entry.date}</TableCell>
-                        <TableCell>
-                          <IconButton onClick={() => handleEdit(index)} sx={{ color: '#ffeb3b' }}>
-                            <Edit />
-                          </IconButton>
-                          <IconButton onClick={() => handleDelete(index)} sx={{ color: '#ff3d00' }}>
-                            <Delete />
-                          </IconButton>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                </TableBody>
-              </Table>
+              <TableContainer
+                  component={Paper}
+                  sx={{
+                    width: '100%',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.07)',
+                    borderRadius: '12px',
+                    background: '#fff',
+                    transition: 'all 0.3s ease-in-out',
+                    '&:hover': {
+                      boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+                      transform: 'scale(1.005)',
+                    }
+                  }}
+              >
+                <Table sx={{ minWidth: 650 }}>
+                  <TableHead sx={{
+                    background: '#f5f5f5',
+                    '& th': {
+                      color: 'text.primary',
+                      fontWeight: 'bold',
+                      fontSize: '1rem'
+                    }
+                  }}>
+                    <TableRow>
+                      <TableCell>Type</TableCell>
+                      <TableCell>Amount</TableCell>
+                      <TableCell>Category</TableCell>
+                      <TableCell>Description</TableCell>
+                      <TableCell>Date</TableCell>
+                      <TableCell>Actions</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {entries
+                        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                        .map((entry, index) => (
+                            <TableRow
+                                key={index}
+                                sx={{
+                                  bgcolor: '#fff',
+                                  transition: 'all 0.25s ease',
+                                  '&:hover': {
+                                    background: '#f0f4ff',
+                                    transform: 'scale(1.01)',
+                                  }
+                                }}
+                            >
+                              <TableCell>{entry.type.toUpperCase()}</TableCell>
+                              <TableCell>${parseFloat(entry.amount).toFixed(2)}</TableCell>
+                              <TableCell>{entry.category}</TableCell>
+                              <TableCell>{entry.description}</TableCell>
+                              <TableCell>{entry.date}</TableCell>
+                              <TableCell>
+                                <IconButton onClick={() => handleEdit(index)} color="primary">
+                                  <Edit />
+                                </IconButton>
+                                <IconButton onClick={() => handleDelete(index)} color="error">
+                                  <Delete />
+                                </IconButton>
+                              </TableCell>
+                            </TableRow>
+                        ))}
+                  </TableBody>
+                </Table>
 
-              <TablePagination
-                rowsPerPageOptions={[5, 10, 25]}
-                component="div"
-                count={entries.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-                sx={{ color: '#ffeb3b', borderTop: '1px solid rgba(255,255,255,0.2)' }}
-              />
-            </TableContainer>
-
+                <TablePagination
+                    rowsPerPageOptions={[5, 10, 25]}
+                    component="div"
+                    count={entries.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    onPageChange={handleChangePage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                />
+              </TableContainer>
           )}
         </Box>
       </Box>

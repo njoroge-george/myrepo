@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:5000/api/fitness';
+const API_URL = import.meta.env.VITE_FITNESS_API_URL;
 
 // Helper to get auth token
 const getAuthHeader = () => {

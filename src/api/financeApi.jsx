@@ -1,7 +1,7 @@
 // src/api/financeApi.js
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api/finance';
+const API_URL = import.meta.env.VITE_FINANCE_API_URL;
 
 export const saveEntry = async (entry) => {
     const response = await axios.post(API_URL, entry);
