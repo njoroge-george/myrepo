@@ -16,7 +16,7 @@ import {
   MenuItem,
 } from '@mui/material';
 import { Delete, Edit } from '@mui/icons-material';
-import { fetchFitnessEntries, createFitnessEntry, deleteFitnessEntry } from '../api/fitnessAPI';
+import { fetchFitnessEntries, createFitnessEntry, deleteFitnessEntry } from '../api/fitnessAPI.jsx';
 import ActiveWorkoutRankingTable from '../components/ActiveWorkoutRankingTable';
 import WorkoutSummaryChart from '../components/WorkoutSummaryChart';
 

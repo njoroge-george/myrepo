@@ -1,25 +1,19 @@
-import axios from 'axios';
+// src/api/Chat.jsx
+import apiClient from './apiClient.jsx';
 import { io } from 'socket.io-client';
 
-const API = import.meta.env.VITE_CHAT_API_BASE_URL;
-const SOCKET_URL = API; // Use your backend URL
-
-// REST: Fetch chat history (optional)
-export const fetchChatHistory = async (token) => {
-    const res = await axios.get(`${API}/chat/history`, {
-        headers: { Authorization: `Bearer ${token}` }
-    });
+// REST: Fetch chat history
+export const fetchChatHistory = async () => {
+    const res = await apiClient.get('/chat/history');
     return res.data;
 };
 
 // Socket.io: Chat client
 export const createChatSocket = (username) => {
-    const socket = io(SOCKET_URL, { transports: ['websocket'] });
+    const socket = io(import.meta.env.VITE_BASE_URL, { transports: ['websocket'] });
 
-    // Join chat
     socket.emit('join', { username });
 
-    // Helper methods
     return {
         socket,
         sendMessage: (text) => socket.emit('message', { username, text }),

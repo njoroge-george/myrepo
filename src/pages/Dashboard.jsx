@@ -49,7 +49,7 @@ export default function Dashboard() {
       try {
         setLoading(true);
         setError(null);
-        const res = await axios.get('http://localhost:5000/api/finance');
+        const res = await axios.get('http://localhost:5001/api/finance');
         setEntries(res.data);
         setLoading(false);
       } catch (err) {
@@ -61,19 +61,19 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/todos')
+    axios.get('http://localhost:5001/api/todos')
         .then(res => setTasks(res.data))
         .catch(() => {});
   }, []);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/projects')
+    axios.get('http://localhost:5001/api/projects')
         .then(res => setProjects(res.data))
         .catch(() => {});
   }, []);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/recipes')
+    axios.get('http://localhost:5001/api/recipes')
         .then(res => setFavRecipe(res.data))
         .catch(() => {});
   }, []);

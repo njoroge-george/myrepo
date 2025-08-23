@@ -1,14 +1,14 @@
-// src/api/portfolioAPI.js
-import axios from 'axios';
+// src/api/portfolioAPI.jsx
+import apiClient from './apiClient.jsx';
 
-const API_URL = import.meta.env.VITE_PORTFOLIO_API_URL;
-
+// Get portfolio
 export const getPortfolio = async () => {
-  const res = await axios.get(`${API_URL}/portfolio`);
+  const res = await apiClient.get('/portfolio');
   return res.data;
 };
 
+// Create portfolio
 export const createPortfolio = async (portfolioData) => {
-  const res = await axios.post(`${API_URL}/portfolio`, portfolioData);
+  const res = await apiClient.post('/portfolio', portfolioData);
   return res.data;
 };

@@ -1,27 +1,26 @@
-// src/api/financeApi.js
-import axios from 'axios';
+// src/api/financeApi.jsx
+import apiClient from "./apiClient.jsx";
 
-const API_URL = import.meta.env.VITE_FINANCE_API_URL;
-
+// Create a new entry
 export const saveEntry = async (entry) => {
-    const response = await axios.post(API_URL, entry);
+    const response = await apiClient.post('/finance', entry);
     return response.data;
 };
 
-export const getEntries = async (entry) => {
-    const response = await axios.get(API_URL, entry);
+// Get all entries
+export const getEntries = async (params = {}) => {
+    const response = await apiClient.get('/finance', { params });
     return response.data;
 };
 
-
-// ✅ Update an existing entry
+// Update an existing entry
 export const updateEntry = async (id, updatedData) => {
-    const response = await axios.put(`${API_URL}/${id}`, updatedData);
+    const response = await apiClient.put(`/finance/${id}`, updatedData);
     return response.data;
 };
 
-// ✅ Delete an entry
+// Delete an entry
 export const deleteEntry = async (id) => {
-    const response = await axios.delete(`${API_URL}/${id}`);
+    const response = await apiClient.delete(`/finance/${id}`);
     return response.data;
 };

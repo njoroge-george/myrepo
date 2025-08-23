@@ -7,7 +7,7 @@ import {
   TableHead, TableRow, TablePagination, IconButton
 } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
-import { saveEntry, getEntries, updateEntry, deleteEntry } from '../api/financeApi';
+import { saveEntry, getEntries, updateEntry, deleteEntry } from '../api/financeApi.jsx';
 
 export default function Finance() {
   const [entries, setEntries] = useState([]);

@@ -1,31 +1,20 @@
-import axios from 'axios';
+// src/api/fitnessAPI.jsx
+import apiClient from './apiClient.jsx';
 
-const API_URL = import.meta.env.VITE_FITNESS_API_URL;
-
-// Helper to get auth token
-const getAuthHeader = () => {
-    const token = localStorage.getItem('token');
-    return {
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
-    };
-};
-
-// ✅ GET all fitness entries
+// GET all fitness entries
 export const fetchFitnessEntries = async () => {
-    const res = await axios.get(BASE_URL, getAuthHeader());
+    const res = await apiClient.get('/fitness');
     return res.data;
 };
 
-// ✅ CREATE a new fitness entry
+// CREATE a new fitness entry
 export const createFitnessEntry = async (data) => {
-    const res = await axios.post(BASE_URL, data, getAuthHeader());
+    const res = await apiClient.post('/fitness', data);
     return res.data;
 };
 
-// ✅ DELETE a fitness entry by ID
+// DELETE a fitness entry by ID
 export const deleteFitnessEntry = async (id) => {
-    const res = await axios.delete(`${BASE_URL}/${id}`, getAuthHeader());
+    const res = await apiClient.delete(`/fitness/${id}`);
     return res.data;
 };

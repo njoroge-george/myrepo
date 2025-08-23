@@ -1,34 +1,32 @@
-// src/api/recipesAPI.js
-import axios from "axios";
-
-const API_URL = import.meta.env.VITE_RECIPE_API_URL;
+// src/api/recipeAPI.jsx
+import apiClient from './apiClient.jsx';
 
 // Get all recipes
 export const getRecipes = async () => {
-  const res = await axios.get(API_URL);
+  const res = await apiClient.get('/recipes');
   return res.data;
 };
 
 // Get a single recipe by ID
 export const getRecipeById = async (id) => {
-  const res = await axios.get(`${API_URL}/${id}`);
+  const res = await apiClient.get(`/recipes/${id}`);
   return res.data;
 };
 
 // Create a new recipe
 export const createRecipe = async (recipeData) => {
-  const res = await axios.post(API_URL, recipeData);
+  const res = await apiClient.post('/recipes', recipeData);
   return res.data;
 };
 
 // Update a recipe
 export const updateRecipe = async (id, updatedData) => {
-  const res = await axios.put(`${API_URL}/${id}`, updatedData);
+  const res = await apiClient.put(`/recipes/${id}`, updatedData);
   return res.data;
 };
 
 // Delete a recipe
 export const deleteRecipe = async (id) => {
-  const res = await axios.delete(`${API_URL}/${id}`);
+  const res = await apiClient.delete(`/recipes/${id}`);
   return res.data;
 };

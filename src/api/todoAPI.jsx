@@ -1,28 +1,32 @@
-// src/api/todosAPI.js
-import axios from 'axios';
-const API_URL = import.meta.env.VITE_TODOS_API_URL;
+// src/api/todoAPI.jsx
+import apiClient from './apiClient.jsx';
 
+// Get all todos
 export const getTodos = async (params = {}) => {
-  const res = await axios.get(API_URL, { params });
+  const res = await apiClient.get('/todos', { params });
   return res.data;
 };
 
+// Get a single todo by ID
 export const getTodoById = async (id) => {
-  const res = await axios.get(`${API_URL}/${id}`);
+  const res = await apiClient.get(`/todos/${id}`);
   return res.data;
 };
 
+// Create a new todo
 export const createTodo = async (payload) => {
-  const res = await axios.post(API_URL, payload);
+  const res = await apiClient.post('/todos', payload);
   return res.data;
 };
 
+// Update a todo
 export const updateTodo = async (id, payload) => {
-  const res = await axios.put(`${API_URL}/${id}`, payload);
+  const res = await apiClient.put(`/todos/${id}`, payload);
   return res.data;
 };
 
+// Delete a todo
 export const deleteTodo = async (id) => {
-  const res = await axios.delete(`${API_URL}/${id}`);
+  const res = await apiClient.delete(`/todos/${id}`);
   return res.data;
 };

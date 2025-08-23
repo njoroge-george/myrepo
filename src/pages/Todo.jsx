@@ -4,7 +4,7 @@ import {
   Select, MenuItem, Chip, Stack, InputLabel, FormControl
 } from '@mui/material';
 import { Add, Delete, Edit } from '@mui/icons-material';
-import { getTodos, createTodo, updateTodo, deleteTodo } from '../api/todoAPI';
+import { getTodos, createTodo, updateTodo, deleteTodo } from '../api/todoAPI.jsx';
 
 const statusColor = {
   pending: 'warning',

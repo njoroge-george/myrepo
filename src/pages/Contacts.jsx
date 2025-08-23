@@ -7,7 +7,7 @@ import {
 import { Add, Edit, Delete, Message } from '@mui/icons-material';
 import {
     getContacts, createContact, updateContact, deleteContact
-} from '../api/contactsAPI';
+} from '../api/Contacts.jsx';
 import ContactFormDialog from '../components/ContactFormDialog';
 import { useNavigate } from 'react-router-dom';
 

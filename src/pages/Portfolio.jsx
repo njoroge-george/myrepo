@@ -9,7 +9,7 @@ import {
     Chip
 } from "@mui/material";
 import { motion } from "framer-motion";
-import { getPortfolio, createPortfolio } from "../api/portfolioAPI";
+import { getPortfolio, createPortfolio } from "../api/portfolioAPI.jsx";
 
 export default function Portfolio() {
     const [portfolio, setPortfolio] = useState([]);

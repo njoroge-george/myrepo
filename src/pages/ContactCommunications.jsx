@@ -7,7 +7,7 @@ import { Add, Delete } from '@mui/icons-material';
 import { useParams } from 'react-router-dom';
 import {
     getCommunications, addCommunication, deleteCommunication, getContact
-} from '../api/contactsAPI';
+} from '../api/Contacts.jsx';
 
 export default function ContactCommunications() {
     const { contactId } = useParams();

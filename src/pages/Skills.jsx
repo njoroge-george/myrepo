@@ -5,9 +5,12 @@ import {
   IconButton, Grid
 } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
-import axios from 'axios';
-
-const API_URL = 'http://localhost:5000/api';
+import {
+  getCourses, getAchievements, addAchievement,
+  getResources, addResource,
+  getPracticeLogs, addPracticeLog,
+  addCourse
+} from '../api/learningAPI.jsx';
 
 function Learning() {
   // --- STATES ---
@@ -26,15 +29,15 @@ function Learning() {
   const fetchAll = async () => {
     try {
       const [coursesRes, achievementsRes, resourcesRes, logsRes] = await Promise.all([
-        axios.get(`${API_URL}/courses`),
-        axios.get(`${API_URL}/achievements`),
-        axios.get(`${API_URL}/resources`),
-        axios.get(`${API_URL}/practice-logs`)
+        getCourses(),
+        getAchievements(),
+        getResources(),
+        getPracticeLogs()
       ]);
-      setCourses(coursesRes.data);
-      setAchievements(achievementsRes.data);
-      setResources(resourcesRes.data);
-      setPracticeLogs(logsRes.data);
+      setCourses(coursesRes);
+      setAchievements(achievementsRes);
+      setResources(resourcesRes);
+      setPracticeLogs(logsRes);
     } catch (err) {
       console.error('Failed to load data:', err);
     }
@@ -46,35 +49,53 @@ function Learning() {
 
   // --- HANDLERS ---
   const handleSave = async (entity, form, setForm, setData) => {
-    if (entity === 'courses' && !form.name) {
-      alert('Name is required');
-      return;
-    }
-    if ((entity === 'achievements' || entity === 'resources') && !form.title) {
-      alert('Title is required');
-      return;
-    }
-    if (entity === 'resources' && !form.url) {
-      alert('URL is required');
-      return;
-    }
-    if (entity === 'practice-logs' && (!form.activity || !form.date)) {
-      alert('Activity and date are required');
-      return;
-    }
-
     try {
-      if (form.id) {
-        await axios.put(`${API_URL}/${entity}/${form.id}`, form);
-        setData(prev => prev.map(item => (item.id === form.id ? form : item)));
-      } else {
-        const res = await axios.post(`${API_URL}/${entity}`, form);
-        setData(prev => [res.data, ...prev]);
+      let res;
+      if (entity === 'courses') {
+        if (!form.name) return alert('Name is required');
+        if (form.id) {
+          res = await updateCourse(form.id, form);
+          setData(prev => prev.map(item => (item.id === form.id ? res : item)));
+        } else {
+          res = await addCourse(form);
+          setData(prev => [res, ...prev]);
+        }
+        setCourseForm({ id: null, name: '', description: '' });
       }
-      if (entity === 'courses') setCourseForm({ id: null, name: '', description: '' });
-      if (entity === 'achievements') setAchievementForm({ id: null, title: '', description: '' });
-      if (entity === 'resources') setResourceForm({ id: null, title: '', url: '' });
-      if (entity === 'practice-logs') setPracticeLogForm({ id: null, activity: '', date: '' });
+      if (entity === 'achievements') {
+        if (!form.title) return alert('Title is required');
+        if (form.id) {
+          res = await updateAchievement(form.id, form);
+          setData(prev => prev.map(item => (item.id === form.id ? res : item)));
+        } else {
+          res = await addAchievement(form);
+          setData(prev => [res, ...prev]);
+        }
+        setAchievementForm({ id: null, title: '', description: '' });
+      }
+      if (entity === 'resources') {
+        if (!form.title) return alert('Title is required');
+        if (!form.url) return alert('URL is required');
+        if (form.id) {
+          res = await updateResource(form.id, form);
+          setData(prev => prev.map(item => (item.id === form.id ? res : item)));
+        } else {
+          res = await addResource(form);
+          setData(prev => [res, ...prev]);
+        }
+        setResourceForm({ id: null, title: '', url: '' });
+      }
+      if (entity === 'practice-logs') {
+        if (!form.activity || !form.date) return alert('Activity and date are required');
+        if (form.id) {
+          res = await updatePracticeLog(form.id, form);
+          setData(prev => prev.map(item => (item.id === form.id ? res : item)));
+        } else {
+          res = await addPracticeLog(form);
+          setData(prev => [res, ...prev]);
+        }
+        setPracticeLogForm({ id: null, activity: '', date: '' });
+      }
     } catch (err) {
       console.error('Save error:', err);
       alert('Failed to save. Check console for details.');
@@ -84,7 +105,10 @@ function Learning() {
   const handleDelete = async (entity, id, setData) => {
     if (!window.confirm('Are you sure you want to delete this item?')) return;
     try {
-      await axios.delete(`${API_URL}/${entity}/${id}`);
+      if (entity === 'courses') await deleteCourse(id);
+      if (entity === 'achievements') await deleteAchievement(id);
+      if (entity === 'resources') await deleteResource(id);
+      if (entity === 'practice-logs') await deletePracticeLog(id);
       setData(prev => prev.filter(item => item.id !== id));
     } catch (err) {
       console.error('Delete error:', err);

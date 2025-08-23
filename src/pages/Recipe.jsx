@@ -14,7 +14,7 @@ import {
   Divider,
 } from '@mui/material';
 import { Edit, Delete, Add, Tag as TagIcon } from '@mui/icons-material';
-import { getRecipes, createRecipe, updateRecipe, deleteRecipe } from '../api/recipeAPI';
+import { getRecipes, createRecipe, updateRecipe, deleteRecipe } from '../api/recipeAPI.jsx';
 
 const cardSx = {
   p: 3,

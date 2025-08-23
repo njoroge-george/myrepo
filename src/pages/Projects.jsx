@@ -4,7 +4,7 @@ import {
     Select, MenuItem, FormControl, InputLabel, List,
     ListItem, ListItemText, Grid
 } from '@mui/material';
-import { getProjects, createProject, deleteProject, updateProject } from '../api/projectsAPI';
+import { getProjects, createProject, deleteProject, updateProject } from '../api/projectsAPI.jsx';
 import { Bar } from 'react-chartjs-2';
 import {
     Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend

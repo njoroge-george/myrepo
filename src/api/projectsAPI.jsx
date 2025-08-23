@@ -1,23 +1,26 @@
-// src/api/projectsApi.js
-import axios from 'axios';
+// src/api/projectsAPI.jsx
+import apiClient from './apiClient.jsx';
 
-const API_URL = import.meta.env.VITE_PROJECTS_API_URL;
+// Get all projects
 export const getProjects = async () => {
-    const res = await axios.get(BASE_URL);
+    const res = await apiClient.get('/projects');
     return res.data;
 };
 
+// Create a new project
 export const createProject = async (project) => {
-    const res = await axios.post(BASE_URL, project);
+    const res = await apiClient.post('/projects', project);
     return res.data;
 };
 
+// Update a project
 export const updateProject = async (id, updatedProject) => {
-    const res = await axios.put(`${BASE_URL}/${id}`, updatedProject);
+    const res = await apiClient.put(`/projects/${id}`, updatedProject);
     return res.data;
 };
 
+// Delete a project
 export const deleteProject = async (id) => {
-    const res = await axios.delete(`${BASE_URL}/${id}`);
+    const res = await apiClient.delete(`/projects/${id}`);
     return res.data;
 };
