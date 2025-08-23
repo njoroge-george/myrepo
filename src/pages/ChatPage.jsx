@@ -1,6 +1,6 @@
 // src/pages/ChatPage.jsx
 import React, { useState, useEffect, useRef } from 'react';
-import { createChatSocket } from '../api/Chat.jsx';
+import { fetchChatHistory, createChatSocket } from '../api/Chat.jsx';
 import {
     Box, Paper, List, ListItem, ListItemAvatar, Avatar, ListItemText,
     Typography, TextField, Button, Divider, Stack, IconButton

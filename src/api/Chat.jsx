@@ -1,16 +1,18 @@
-// src/api/Chat.jsx
 import apiClient from './apiClient.jsx';
 import { io } from 'socket.io-client';
 
 // REST: Fetch chat history
 export const fetchChatHistory = async () => {
     const res = await apiClient.get('/chat/history');
-    return res.data;
+    // Guard against non-array
+    return Array.isArray(res.data) ? res.data : [];
 };
 
 // Socket.io: Chat client
 export const createChatSocket = (username) => {
-    const socket = io(import.meta.env.VITE_BASE_URL, { transports: ['websocket'] });
+    const socket = io(import.meta.env.VITE_BASE_URL.replace('/api',''), {
+        transports: ['websocket'],
+    });
 
     socket.emit('join', { username });
 
