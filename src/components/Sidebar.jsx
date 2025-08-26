@@ -16,6 +16,9 @@ import ListAltIcon from '@mui/icons-material/ListAlt';
 import FoodIcon from '@mui/icons-material/Settings';
 import SettingsIcon from '@mui/icons-material/Settings';
 import ChatIcon from '@mui/icons-material/Settings';
+import EmailIcon from '@mui/icons-material/Email';
+import FaxIcon from '@mui/icons-material/Fax';
+import ScoreIcon from '@mui/icons-material/Score';
 
 const navItems = [
   { text: 'Overview', path: '/overview', icon: <DashboardIcon /> },
@@ -29,8 +32,10 @@ const navItems = [
   { text: 'To Do', path: '/to_do', icon: <ListAltIcon /> },
   { text: 'Recipe', path: '/recipe', icon: <WorkIcon /> },
     { text: 'Portfolio', path: '/portfolio', icon: <FoodIcon /> },
-    { text: 'Settings', path: '/settings', icon: <SettingsIcon /> },
     { text: 'Chat', path: '/chat', icon: <ChatIcon /> },
+    { text: 'Contact', path: '/contact', icon: <EmailIcon /> },
+    { text: 'AdminMail', path: '/adminmail', icon: <FaxIcon /> },
+    { text: 'GradePage', path: '/gradepage', icon: <ScoreIcon /> },
 ];
 
 const Sidebar = () => {
@@ -44,10 +49,10 @@ const Sidebar = () => {
         '& .MuiDrawer-paper': {
           width: 250,
           boxSizing: 'border-box',
-          background: 'linear-gradient(160deg, rgba(20,20,40,0.95), rgba(50,0,80,0.95))',
+          background: '#fff',
           backdropFilter: 'blur(10px)',
-          color: '#fff',
-          boxShadow: '4px 0 20px rgba(0,0,0,0.6)',
+          color: '#000',
+          boxShadow: 'inset 4px 0 1px rgba(0,0,0,0.6)',
         },
       }}
     >
@@ -60,13 +65,13 @@ const Sidebar = () => {
           <Typography
             variant="h6"
             sx={{
-              color: '#ffeb3b',
+              color: '#00eb3b',
               mb: 2,
-              textShadow: '0px 0px 10px rgba(255,255,100,0.8)',
+              textShadow: 'inset 0px 0px 10px rgba(255,255,100,0.8)',
               fontWeight: 'bold',
             }}
           >
-            Dashboard Menu
+            Logistics
           </Typography>
           <List>
             {navItems.map(({ text, path, icon }, index) => (
@@ -77,7 +82,7 @@ const Sidebar = () => {
                 transition={{ delay: index * 0.05, duration: 0.4 }}
                 whileHover={{
                   scale: 1.05,
-                  boxShadow: '0px 0px 20px rgba(255, 235, 59, 0.6)',
+                  boxShadow: 'inset 0px 0px 20px rgba(110, 255, 5, 0.6)',
                 }}
               >
                 <ListItemButton
@@ -86,7 +91,7 @@ const Sidebar = () => {
                   sx={{
                     borderRadius: 2,
                     mb: 1,
-                    color: '#ccc',
+                    color: '#000',
                     transition: 'all 0.3s ease',
                     '&.active': {
                       background: 'linear-gradient(90deg, #6a1b9a, #ff4081)',

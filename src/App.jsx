@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Box } from '@mui/material';
-import { ThemeProvider } from './ThemeContext.jsx';
+import { ThemeProvider, createTheme } from '@mui/material/styles'; // <-- use MUI's ThemeProvider
 import {
     Routes,
     Route,
@@ -18,11 +18,14 @@ import Journal from './pages/Journal.jsx';
 import Projects from './pages/Projects.jsx';
 import Skills from './pages/Skills.jsx';
 import ChatPage from './pages/ChatPage.jsx';
-
 import To_do from './pages/Todo.jsx';
 import ContactCommunications from './pages/ContactCommunications';
 import Recipe from './pages/Recipe.jsx';
 import Portfolio from './pages/Portfolio.jsx';
+import ContactPage from './pages/VcontactsPage.jsx';
+import AdminMailPage from './pages/AdminMailPage.jsx';
+import GradePage from './pages/GradePage.jsx';
+import Footer from './components/Footer.jsx';
 
 function Layout({ children, collapsed, setCollapsed }) {
     return (
@@ -32,15 +35,20 @@ function Layout({ children, collapsed, setCollapsed }) {
                 <Topbar collapsed={collapsed} setCollapsed={setCollapsed} />
                 {children}
             </Box>
+            <Box sx={{ pb: { xs: 5, md: 6 } }}>
+                <Footer />
+            </Box>
         </Box>
     );
 }
+
+const theme = createTheme(); // Optionally, customize your theme here
 
 export default function App() {
     const [collapsed, setCollapsed] = useState(false);
 
     return (
-        <ThemeProvider>
+        <ThemeProvider theme={theme}>
             <Routes>
                 <Route path="/overview" element={<Layout collapsed={collapsed} setCollapsed={setCollapsed}><Dashboard /></Layout>} />
                 <Route path="/contacts" element={<Layout collapsed={collapsed} setCollapsed={setCollapsed}><Contacts /></Layout>} />
@@ -52,9 +60,14 @@ export default function App() {
                 <Route path="/contacts/:contactId/comms" element={<Layout collapsed={collapsed} setCollapsed={setCollapsed}><ContactCommunications /></Layout>} />
                 <Route path="/portfolio" element={<Layout collapsed={collapsed} setCollapsed={setCollapsed}><Portfolio /></Layout>} />
                 <Route path="/to_do" element={<Layout collapsed={collapsed} setCollapsed={setCollapsed}><To_do /></Layout>} />
+                <Route path="/recipe" element={<Layout collapsed={collapsed} setCollapsed={setCollapsed}><Recipe /></Layout>} />
                 <Route path="/chat" element={<Layout collapsed={collapsed} setCollapsed={setCollapsed}><ChatPage /></Layout>} />
+                <Route path="/contact" element={<Layout collapsed={collapsed} setCollapsed={setCollapsed}><ContactPage /></Layout>} />
+                <Route path="/adminmail" element={<Layout collapsed={collapsed} setCollapsed={setCollapsed}><AdminMailPage /></Layout>} />
+                <Route path="/gradepage" element={<Layout collapsed={collapsed} setCollapsed={setCollapsed}><GradePage /></Layout>} />
                 <Route path="*" element={<Navigate to="/overview" />} />
             </Routes>
+
         </ThemeProvider>
     );
 }

@@ -1,4 +1,4 @@
-// src/pages/Finance.jsx
+// src/pages/FinanceCard.jsx
 import React, { useState, useEffect } from 'react';
 import {
   Box, Typography, Paper, TextField, Button,
@@ -7,6 +7,7 @@ import {
   TableHead, TableRow, TablePagination, IconButton
 } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
+import FinanceCharts from '../components/FinanceCharts.jsx'
 import { saveEntry, getEntries, updateEntry, deleteEntry } from '../api/financeApi.jsx';
 
 export default function Finance() {
@@ -226,6 +227,13 @@ export default function Finance() {
                 />
               </TableContainer>
           )}
+        </Box>
+        {/* Charts */}
+        <Box mt={5} mx="auto" maxWidth={1400}>
+          <Typography variant="h5" mb={2} fontWeight="bold">
+              Financial  Overview
+            </Typography>
+            <FinanceCharts entries={entries} />
         </Box>
       </Box>
   );

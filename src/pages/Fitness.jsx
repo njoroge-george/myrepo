@@ -16,9 +16,43 @@ import {
   MenuItem,
 } from '@mui/material';
 import { Delete, Edit } from '@mui/icons-material';
-import { fetchFitnessEntries, createFitnessEntry, deleteFitnessEntry } from '../api/fitnessAPI.jsx';
+import {
+  fetchFitnessEntries,
+  createFitnessEntry,
+  updateFitnessEntry,
+  deleteFitnessEntry,
+} from '../api/fitnessAPI.jsx';
 import ActiveWorkoutRankingTable from '../components/ActiveWorkoutRankingTable';
 import WorkoutSummaryChart from '../components/WorkoutSummaryChart';
+import BodyFitMonthlyChart from '../components/BodyFitMonthlyChart.jsx';
+
+
+const getMonthlyWorkoutData = (workouts) => {
+  const monthlyData = {};
+  workouts.forEach((w) => {
+    if (w.workout_date) {
+      const date = new Date(w.workout_date);
+      const month = date.toLocaleString('default', { month: 'short', year: 'numeric' });
+      if (!monthlyData[month]) {
+        monthlyData[month] = { month, count: 0 };
+      }
+      monthlyData[month].count += 1;
+    }
+  });
+  return Object.values(monthlyData);
+};
+
+const getMonthlyRepsData = (workouts) => {
+  const monthlyReps = {};
+  workouts.forEach((w) => {
+    if (w.workout_date && w.reps) {
+      const date = new Date(w.workout_date);
+      const month = date.toLocaleString('default', { month: 'short', year: 'numeric' });
+      monthlyReps[month] = (monthlyReps[month] || 0) + Number(w.reps);
+    }
+  });
+  return Object.entries(monthlyReps).map(([month, reps]) => ({ month, reps }));
+};
 
 export default function Fitness() {
   const [form, setForm] = useState({
@@ -35,13 +69,7 @@ export default function Fitness() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const workoutGroups = {
-    Chest: [
-      "Diamond Push-ups",
-      "V-ups",
-      "Front Stretch Push-ups",
-      "Wide Push-ups",
-      "Decline full body Push-ups",
-    ],
+    Chest: ["Diamond Push-ups", "V-ups", "Front Stretch Push-ups", "Wide Push-ups", "Decline full body Push-ups"],
     Legs: ["Squats"],
     Abs: ["Front Barbell Raise", "Sit-ups", "Bicycle Crunches"],
     FullBody: ["Running"],
@@ -49,33 +77,6 @@ export default function Fitness() {
     Shoulders: ["Pike Push-ups", "Triceps Dips"],
   };
   const workoutTypes = Object.keys(workoutGroups);
-
-  const getMonthlyWorkoutData = (workouts) => {
-    const monthlyData = {};
-    workouts.forEach((w) => {
-      if (w.workout_date) {
-        const date = new Date(w.workout_date);
-        const month = date.toLocaleString('default', { month: 'short', year: 'numeric' });
-        if (!monthlyData[month]) {
-          monthlyData[month] = { month, count: 0 };
-        }
-        monthlyData[month].count += 1;
-      }
-    });
-    return Object.values(monthlyData);
-  };
-
-  const getMonthlyRepsData = (workouts) => {
-    const monthlyReps = {};
-    workouts.forEach((w) => {
-      if (w.workout_date && w.reps) {
-        const date = new Date(w.workout_date);
-        const month = date.toLocaleString('default', { month: 'short', year: 'numeric' });
-        monthlyReps[month] = (monthlyReps[month] || 0) + Number(w.reps);
-      }
-    });
-    return Object.entries(monthlyReps).map(([month, reps]) => ({ month, reps }));
-  };
 
   const loadWorkouts = async () => {
     try {
@@ -90,9 +91,10 @@ export default function Fitness() {
     e.preventDefault();
     try {
       if (editId) {
-        await deleteFitnessEntry(editId);
+        await updateFitnessEntry(editId, form);
+      } else {
+        await createFitnessEntry(form);
       }
-      await createFitnessEntry(form);
       setForm({ workout_type: '', duration: '', calories: '', workout_date: '', reps: '', name: '' });
       setEditId(null);
       loadWorkouts();
@@ -134,150 +136,150 @@ export default function Fitness() {
 
   return (
       <Box sx={{ bgcolor: '#f9f9f9', minHeight: '100vh', color: 'text.primary', py: 4 }}>
-        <Typography variant="h4" mb={3} fontWeight="bold" align="center" color="primary">
-          Nick Fitness Tracker
-        </Typography>
+        <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
+          <Typography variant="h4" mb={3} fontWeight="bold" align="center" color="primary">
+            Nick Fitness Tracker
+          </Typography>
 
-        {/* Form */}
-        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
-          <Paper elevation={3} sx={{ p: 3, borderRadius: 3, maxWidth: 400, width: '100%', background: '#fff' }}>
-            <form onSubmit={handleSubmit}>
-              <TextField
-                  select
-                  label="Workout Type"
-                  fullWidth
-                  margin="normal"
-                  value={form.workout_type}
-                  onChange={(e) => setForm({ ...form, workout_type: e.target.value, name: '' })}
-              >
-                {workoutTypes.map((type) => (
-                    <MenuItem key={type} value={type}>
-                      {type}
-                    </MenuItem>
-                ))}
-              </TextField>
-              <TextField
-                  select
-                  label="Workout Name"
-                  fullWidth
-                  margin="normal"
-                  value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  disabled={!form.workout_type}
-              >
-                {(workoutGroups[form.workout_type] || []).map((workout) => (
-                    <MenuItem key={workout} value={workout}>
-                      {workout}
-                    </MenuItem>
-                ))}
-              </TextField>
-              <TextField
-                  label="Duration (min)"
-                  type="number"
-                  fullWidth
-                  margin="normal"
-                  value={form.duration}
-                  onChange={(e) => setForm({ ...form, duration: e.target.value })}
-              />
-              <TextField
-                  label="Calories"
-                  type="number"
-                  fullWidth
-                  margin="normal"
-                  value={form.calories}
-                  onChange={(e) => setForm({ ...form, calories: e.target.value })}
-              />
-              <TextField
-                  label="Fitness Date"
-                  type="date"
-                  fullWidth
-                  margin="normal"
-                  InputLabelProps={{ shrink: true }}
-                  value={form.workout_date}
-                  onChange={(e) => setForm({ ...form, workout_date: e.target.value })}
-              />
-              <TextField
-                  label="Reps"
-                  type="number"
-                  fullWidth
-                  margin="normal"
-                  value={form.reps}
-                  onChange={(e) => setForm({ ...form, reps: e.target.value })}
-              />
-              <Button
-                  type="submit"
-                  variant="contained"
-                  fullWidth
-                  sx={{ mt: 2, fontWeight: 'bold' }}
-              >
-                {editId ? 'Update Fitness' : 'Add Fitness'}
-              </Button>
-            </form>
-          </Paper>
-        </Box>
-
-        {/* Table */}
-        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
-          <Paper elevation={2} sx={{ borderRadius: 3, maxWidth: 900, width: '100%', background: '#fff', p: 2 }}>
-            <TableContainer>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell><b>Date</b></TableCell>
-                    <TableCell><b>Type</b></TableCell>
-                    <TableCell><b>Reps</b></TableCell>
-                    <TableCell><b>Name</b></TableCell>
-                    <TableCell><b>Duration</b></TableCell>
-                    <TableCell><b>Calories</b></TableCell>
-                    <TableCell><b>Actions</b></TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {workouts.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((w) => (
-                      <TableRow key={w.id} sx={{ '&:hover': { background: '#f0f4ff' } }}>
-                        <TableCell>{w.workout_date?.slice(0, 10)}</TableCell>
-                        <TableCell>{w.workout_type}</TableCell>
-                        <TableCell>{w.reps}</TableCell>
-                        <TableCell>{w.name}</TableCell>
-                        <TableCell>{w.duration} min</TableCell>
-                        <TableCell>{w.calories} cal</TableCell>
-                        <TableCell>
-                          <IconButton onClick={() => handleEdit(w)} color="primary">
-                            <Edit />
-                          </IconButton>
-                          <IconButton onClick={() => handleDelete(w.id)} color="error">
-                            <Delete />
-                          </IconButton>
-                        </TableCell>
-                      </TableRow>
+          {/* Form */}
+          <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
+            <Paper elevation={3} sx={{ p: 3, borderRadius: 3, maxWidth: 400, width: '100%', background: '#fff' }}>
+              <form onSubmit={handleSubmit}>
+                <TextField
+                    select
+                    label="Workout Type"
+                    fullWidth
+                    margin="normal"
+                    value={form.workout_type}
+                    onChange={(e) => setForm({ ...form, workout_type: e.target.value, name: '' })}
+                >
+                  {workoutTypes.map((type) => (
+                      <MenuItem key={type} value={type}>{type}</MenuItem>
                   ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-            <TablePagination
-                component="div"
-                count={workouts.length}
-                page={page}
-                onPageChange={handleChangePage}
-                rowsPerPage={rowsPerPage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-            />
-          </Paper>
-        </Box>
+                </TextField>
+                <TextField
+                    select
+                    label="Workout Name"
+                    fullWidth
+                    margin="normal"
+                    value={form.name}
+                    onChange={(e) => setForm({ ...form, name: e.target.value })}
+                    disabled={!form.workout_type}
+                >
+                  {(workoutGroups[form.workout_type] || []).map((workout) => (
+                      <MenuItem key={workout} value={workout}>{workout}</MenuItem>
+                  ))}
+                </TextField>
+                <TextField
+                    label="Duration (min)"
+                    type="number"
+                    fullWidth
+                    margin="normal"
+                    value={form.duration}
+                    onChange={(e) => setForm({ ...form, duration: e.target.value })}
+                />
+                <TextField
+                    label="Calories"
+                    type="number"
+                    fullWidth
+                    margin="normal"
+                    value={form.calories}
+                    onChange={(e) => setForm({ ...form, calories: e.target.value })}
+                />
+                <TextField
+                    label="Fitness Date"
+                    type="date"
+                    fullWidth
+                    margin="normal"
+                    InputLabelProps={{ shrink: true }}
+                    value={form.workout_date}
+                    onChange={(e) => setForm({ ...form, workout_date: e.target.value })}
+                />
+                <TextField
+                    label="Reps"
+                    type="number"
+                    fullWidth
+                    margin="normal"
+                    value={form.reps}
+                    onChange={(e) => setForm({ ...form, reps: e.target.value })}
+                />
+                <Button type="submit" variant="contained" fullWidth sx={{ mt: 2, fontWeight: 'bold' }}>
+                  {editId ? 'Update Fitness' : 'Add Fitness'}
+                </Button>
+              </form>
+            </Paper>
+          </Box>
 
-        {/* Charts */}
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, justifyContent: 'center', mb: 4 }}>
-          <WorkoutSummaryChart workouts={workouts} />
-          {/* Add other charts as needed, using white backgrounds and neutral colors */}
-        </Box>
+          {/* Table */}
+          <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
+            <Paper elevation={2} sx={{ borderRadius: 3, maxWidth: 900, width: '100%', background: '#fff', p: 2 }}>
+              <TableContainer>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell><b>Date</b></TableCell>
+                      <TableCell><b>Type</b></TableCell>
+                      <TableCell><b>Reps</b></TableCell>
+                      <TableCell><b>Name</b></TableCell>
+                      <TableCell><b>Duration</b></TableCell>
+                      <TableCell><b>Calories</b></TableCell>
+                      <TableCell><b>Actions</b></TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {workouts.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((w) => (
+                        <TableRow key={w.id} sx={{ '&:hover': { background: '#f0f4ff' } }}>
+                          <TableCell>{w.workout_date?.slice(0, 10)}</TableCell>
+                          <TableCell>{w.workout_type}</TableCell>
+                          <TableCell>{w.reps}</TableCell>
+                          <TableCell>{w.name}</TableCell>
+                          <TableCell>{w.duration} min</TableCell>
+                          <TableCell>{w.calories} cal</TableCell>
+                          <TableCell>
+                            <IconButton onClick={() => handleEdit(w)} color="primary"><Edit /></IconButton>
+                            <IconButton onClick={() => handleDelete(w.id)} color="error"><Delete /></IconButton>
+                          </TableCell>
+                        </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              <TablePagination
+                  component="div"
+                  count={workouts.length}
+                  page={page}
+                  onPageChange={handleChangePage}
+                  rowsPerPage={rowsPerPage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
+              />
+            </Paper>
+          </Box>
 
-        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
-          <Paper elevation={2} sx={{ borderRadius: 3, maxWidth: 900, width: '100%', background: '#fff', p: 2 }}>
-            <Typography variant="h6" mb={2} fontWeight="bold">
-              Active Workout Rankings
-            </Typography>
-            <ActiveWorkoutRankingTable workouts={workouts} />
-          </Paper>
+          {/* Charts */}
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, width: '100%', mb: 4 }}>
+            <Paper elevation={2} sx={{ p: 3, borderRadius: 3, background: '#fff', width: '100%' }}>
+              <WorkoutSummaryChart workouts={workouts} />
+            </Paper>
+            <Paper elevation={2} sx={{ p: 3, borderRadius: 3, background: '#fff', width: '100%' }}>
+              <BodyFitMonthlyChart workouts={workouts} />
+            </Paper>
+          {/*  <Paper elevation={2} sx={{ p: 3, borderRadius: 3, background: '#fff', width: '100%' }}>*/}
+          {/*    <MonthlyWorkoutChart data={getMonthlyWorkoutData(workouts)} />*/}
+          {/*  </Paper>*/}
+          {/*  <Paper elevation={2} sx={{ p: 3, borderRadius: 3, background: '#fff', width: '100%' }}>*/}
+          {/*    <MonthlyRepsChart data={getMonthlyRepsData(workouts)} />*/}
+          {/*  </Paper>*/}
+          </Box>
+
+          {/* Rankings */}
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, width: '100%', mb: 4 }}>
+            <Paper elevation={2} sx={{ p: 3, borderRadius: 3, background: '#fff', width: '100%' }}>
+              <Typography variant="h6" mb={2} fontWeight="bold">
+                Active Workout Rankings
+              </Typography>
+              <ActiveWorkoutRankingTable workouts={workouts} />
+            </Paper>
+          </Box>
         </Box>
       </Box>
   );

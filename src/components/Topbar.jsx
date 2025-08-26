@@ -4,7 +4,7 @@ import MenuIcon from '@mui/icons-material/MenuOpen';
 
 export default function Topbar({ collapsed, setCollapsed }) {
     return (
-        <AppBar position="static" sx={{ bgcolor: '#2d3436' }}>
+        <AppBar position="static" sx={{ bgcolor: '#2ef70', alignItems: 'center' }}>
             <Toolbar>
                 <IconButton
                     edge="start"
@@ -15,7 +15,7 @@ export default function Topbar({ collapsed, setCollapsed }) {
                     <MenuIcon />
                 </IconButton>
                 <Typography variant="h6" noWrap>
-                    Finance Dashboard
+                    Logistics Management System
                 </Typography>
             </Toolbar>
         </AppBar>

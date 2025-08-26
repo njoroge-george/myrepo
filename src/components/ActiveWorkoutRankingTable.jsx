@@ -73,10 +73,10 @@ export default function ActiveWorkoutRankingTable({ workouts }) {
   const pieData = sorted.slice(0, 15); // top 15
 
   return (
-    <Card sx={{ mb: 3, bgcolor: "#1a1a1a" }}>
+    <Card sx={{ mb: 3, bgcolor: "#fff" }}>
       <CardHeader
         title="🏆 Fitness Activity Ranking"
-        sx={{ color: "#ffd700" }}
+        sx={{ color: "#000" }}
       />
       <CardContent>
         {pieData.length === 0 ? (
@@ -105,17 +105,17 @@ export default function ActiveWorkoutRankingTable({ workouts }) {
                   </Pie>
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: "#333",
-                      borderColor: "#ffd700",
-                      color: "#fff"
+                      backgroundColor: "#fff",
+                      borderColor: "#000",
+                      color: "#000"
                     }}
                   />
-                  <Legend wrapperStyle={{ fontSize: 14, fill: "#ffd700" }} />
+                  <Legend wrapperStyle={{ fontSize: 14, fill: "#000" }} />
                 </PieChart>
               </ResponsiveContainer>
             </div>
 
-            <Divider sx={{ my: 2, borderColor: "#ffd700" }} />
+            <Divider sx={{ my: 2, borderColor: "#000" }} />
 
             <Stack spacing={2}>
               {pieData.map((entry) => (
@@ -127,20 +127,20 @@ export default function ActiveWorkoutRankingTable({ workouts }) {
                     justifyContent: "space-between",
                     alignItems: "center",
                     p: 2,
-                    bgcolor: "#2a2a2a",
-                    borderColor: "#ffd700",
+                    bgcolor: "#fff",
+                    borderColor: "#000",
                     borderRadius: 2,
                     borderWidth: 1,
                     borderStyle: "solid"
                   }}
                 >
-                  <Typography variant="subtitle1" sx={{ color: "#ffd700" }}>
+                  <Typography variant="subtitle1" sx={{ color: "#000" }}>
                     {entry.name}
                   </Typography>
-                  <Typography variant="body2" sx={{ color: "#fafafa" }}>
+                  <Typography variant="body2" sx={{ color: "#000" }}>
                     {entry.totalReps} reps - {getStars(entry.totalReps)}
                   </Typography>
-                  <Typography variant="caption" sx={{ maxWidth: 200, color: "#ccc" }}>
+                  <Typography variant="caption" sx={{ maxWidth: 200, color: "#000" }}>
                     {getVibe(entry.totalReps)}
                   </Typography>
                 </Card>

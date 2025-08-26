@@ -1,26 +1,25 @@
-// src/api/notesAPI.jsx
-import apiClient from './apiClient.jsx';
+import apiClient from './apiClient';
 
 // Get all notes
-export const getNotes = async () => {
+export async function getNotes() {
     const res = await apiClient.get('/notes');
     return res.data;
-};
+}
 
 // Add a new note
-export const addNote = async (note) => {
+export async function addNote(note) {
     const res = await apiClient.post('/notes', note);
     return res.data;
-};
+}
 
 // Update a note
-export const updateNote = async (id, note) => {
+export async function updateNote(id, note) {
     const res = await apiClient.put(`/notes/${id}`, note);
     return res.data;
-};
+}
 
 // Delete a note
-export const deleteNote = async (id) => {
+export async function deleteNote(id) {
     const res = await apiClient.delete(`/notes/${id}`);
     return res.data;
-};
+}

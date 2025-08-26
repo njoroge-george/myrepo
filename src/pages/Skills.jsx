@@ -2,15 +2,15 @@ import React, { useState, useEffect } from 'react';
 import {
   Box, Typography, Paper, TextField, Button,
   Table, TableHead, TableRow, TableCell, TableBody,
-  IconButton, Grid
+  IconButton, Grid, CircularProgress, Snackbar, Alert
 } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
 import {
-  getCourses, getAchievements, addAchievement,
-  getResources, addResource,
-  getPracticeLogs, addPracticeLog,
-  addCourse
-} from '../api/learningAPI.jsx';
+  getCourses, addCourse, updateCourse, deleteCourse,
+  getAchievements, addAchievement, updateAchievement, deleteAchievement,
+  getResources, addResource, updateResource, deleteResource,
+  getPracticeLogs, addPracticeLog, updatePracticeLog, deletePracticeLog,
+} from '../api/learningAPI.jsx'; // <-- use .js unless you have JSX in API!
 
 function Learning() {
   // --- STATES ---
@@ -18,6 +18,8 @@ function Learning() {
   const [achievements, setAchievements] = useState([]);
   const [resources, setResources] = useState([]);
   const [practiceLogs, setPracticeLogs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [alert, setAlert] = useState({ open: false, message: '', severity: 'success' });
 
   // Forms state
   const [courseForm, setCourseForm] = useState({ id: null, name: '', description: '' });
@@ -27,6 +29,7 @@ function Learning() {
 
   // --- FETCH DATA ---
   const fetchAll = async () => {
+    setLoading(true);
     try {
       const [coursesRes, achievementsRes, resourcesRes, logsRes] = await Promise.all([
         getCourses(),
@@ -34,12 +37,16 @@ function Learning() {
         getResources(),
         getPracticeLogs()
       ]);
-      setCourses(coursesRes);
-      setAchievements(achievementsRes);
-      setResources(resourcesRes);
-      setPracticeLogs(logsRes);
+      setCourses(Array.isArray(coursesRes) ? coursesRes : []);
+      setAchievements(Array.isArray(achievementsRes) ? achievementsRes : []);
+      setResources(Array.isArray(resourcesRes) ? resourcesRes : []);
+      setPracticeLogs(Array.isArray(logsRes) ? logsRes : []);
+      setAlert({ open: false, message: '', severity: 'success' });
     } catch (err) {
+      setAlert({ open: true, message: 'Failed to load data', severity: 'error' });
       console.error('Failed to load data:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -52,7 +59,7 @@ function Learning() {
     try {
       let res;
       if (entity === 'courses') {
-        if (!form.name) return alert('Name is required');
+        if (!form.name) return setAlert({ open: true, message: 'Name is required', severity: 'warning' });
         if (form.id) {
           res = await updateCourse(form.id, form);
           setData(prev => prev.map(item => (item.id === form.id ? res : item)));
@@ -63,7 +70,7 @@ function Learning() {
         setCourseForm({ id: null, name: '', description: '' });
       }
       if (entity === 'achievements') {
-        if (!form.title) return alert('Title is required');
+        if (!form.title) return setAlert({ open: true, message: 'Title is required', severity: 'warning' });
         if (form.id) {
           res = await updateAchievement(form.id, form);
           setData(prev => prev.map(item => (item.id === form.id ? res : item)));
@@ -74,8 +81,8 @@ function Learning() {
         setAchievementForm({ id: null, title: '', description: '' });
       }
       if (entity === 'resources') {
-        if (!form.title) return alert('Title is required');
-        if (!form.url) return alert('URL is required');
+        if (!form.title) return setAlert({ open: true, message: 'Title is required', severity: 'warning' });
+        if (!form.url) return setAlert({ open: true, message: 'URL is required', severity: 'warning' });
         if (form.id) {
           res = await updateResource(form.id, form);
           setData(prev => prev.map(item => (item.id === form.id ? res : item)));
@@ -86,7 +93,7 @@ function Learning() {
         setResourceForm({ id: null, title: '', url: '' });
       }
       if (entity === 'practice-logs') {
-        if (!form.activity || !form.date) return alert('Activity and date are required');
+        if (!form.activity || !form.date) return setAlert({ open: true, message: 'Activity and date are required', severity: 'warning' });
         if (form.id) {
           res = await updatePracticeLog(form.id, form);
           setData(prev => prev.map(item => (item.id === form.id ? res : item)));
@@ -96,9 +103,10 @@ function Learning() {
         }
         setPracticeLogForm({ id: null, activity: '', date: '' });
       }
+      setAlert({ open: true, message: 'Saved successfully!', severity: 'success' });
     } catch (err) {
       console.error('Save error:', err);
-      alert('Failed to save. Check console for details.');
+      setAlert({ open: true, message: 'Failed to save. Check console for details.', severity: 'error' });
     }
   };
 
@@ -110,9 +118,10 @@ function Learning() {
       if (entity === 'resources') await deleteResource(id);
       if (entity === 'practice-logs') await deletePracticeLog(id);
       setData(prev => prev.filter(item => item.id !== id));
+      setAlert({ open: true, message: 'Deleted successfully!', severity: 'success' });
     } catch (err) {
       console.error('Delete error:', err);
-      alert('Failed to delete.');
+      setAlert({ open: true, message: 'Failed to delete.', severity: 'error' });
     }
   };
 
@@ -120,6 +129,9 @@ function Learning() {
     setForm(form);
   };
 
+  const handleCloseAlert = () => setAlert({ ...alert, open: false });
+
+  // --- UI
   return (
       <Box
           sx={{

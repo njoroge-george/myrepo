@@ -1,44 +1,88 @@
-// src/api/Contacts.jsx
-import apiClient from './apiClient.jsx';
+import apiClient from './apiClient';
 
-// Contacts
-export const getContacts = async (params = {}) => {
-    const res = await apiClient.get('/contacts', { params });
-    return res.data;
-};
+// CONTACTS CRUD
+export async function getContacts(params = {}) {
+    try {
+        const res = await apiClient.get('/contacts', { params });
+        // Accept array or { data: [...] }
+        if (Array.isArray(res.data)) return res.data;
+        if (Array.isArray(res.data?.data)) return res.data.data;
+        return [];
+    } catch (err) {
+        console.error('Failed to fetch contacts:', err);
+        throw err;
+    }
+}
 
-export const getContact = async (id) => {
-    const res = await apiClient.get(`/contacts/${id}`);
-    return res.data;
-};
+export async function getContact(id) {
+    try {
+        const res = await apiClient.get(`/contacts/${id}`);
+        return res.data || {};
+    } catch (err) {
+        console.error(`Failed to fetch contact ${id}:`, err);
+        throw err;
+    }
+}
 
-export const createContact = async (data) => {
-    const res = await apiClient.post('/contacts', data);
-    return res.data;
-};
+export async function createContact(data) {
+    try {
+        const res = await apiClient.post('/contacts', data);
+        return res.data || {};
+    } catch (err) {
+        console.error('Failed to create contact:', err);
+        throw err;
+    }
+}
 
-export const updateContact = async (id, data) => {
-    const res = await apiClient.put(`/contacts/${id}`, data);
-    return res.data;
-};
+export async function updateContact(id, data) {
+    try {
+        const res = await apiClient.put(`/contacts/${id}`, data);
+        return res.data || {};
+    } catch (err) {
+        console.error(`Failed to update contact ${id}:`, err);
+        throw err;
+    }
+}
 
-export const deleteContact = async (id) => {
-    const res = await apiClient.delete(`/contacts/${id}`);
-    return res.data;
-};
+export async function deleteContact(id) {
+    try {
+        const res = await apiClient.delete(`/contacts/${id}`);
+        return res.data || {};
+    } catch (err) {
+        console.error(`Failed to delete contact ${id}:`, err);
+        throw err;
+    }
+}
 
-// Communications
-export const getCommunications = async (contactId, params = {}) => {
-    const res = await apiClient.get(`/contacts/${contactId}/comms`, { params });
-    return res.data;
-};
+// COMMUNICATIONS CRUD
+export async function getCommunications(contactId, params = {}) {
+    try {
+        const res = await apiClient.get(`/contacts/${contactId}/comms`, { params });
+        if (Array.isArray(res.data)) return res.data;
+        if (Array.isArray(res.data?.data)) return res.data.data;
+        return [];
+    } catch (err) {
+        console.error(`Failed to fetch communications for contact ${contactId}:`, err);
+        throw err;
+    }
+}
 
-export const addCommunication = async (contactId, data) => {
-    const res = await apiClient.post(`/contacts/${contactId}/comms`, data);
-    return res.data;
-};
+export async function addCommunication(contactId, data) {
+    try {
+        const res = await apiClient.post(`/contacts/${contactId}/comms`, data);
+        return res.data || {};
+    } catch (err) {
+        console.error(`Failed to add communication for contact ${contactId}:`, err);
+        throw err;
+    }
+}
 
-export const deleteCommunication = async (contactId, commId) => {
-    const res = await apiClient.delete(`/contacts/${contactId}/comms/${commId}`);
-    return res.data;
-};
+export async function deleteCommunication(contactId, commId) {
+    try {
+        const res = await apiClient.delete(`/contacts/${contactId}/comms/${commId}`);
+        return res.data || {};
+    } catch (err) {
+        console.error(`Failed to delete communication ${commId} for contact ${contactId}:`, err);
+        throw err;
+    }
+}

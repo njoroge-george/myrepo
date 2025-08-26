@@ -27,7 +27,7 @@ const WorkoutSummaryChart = ({ workouts }) => {
     return (
         <Box
             sx={{
-                bgcolor: '#0f172a', // dark background
+                bgcolor: 'white', // dark background
                 p: 3,
                 borderRadius: 3,
                 boxShadow: '0 0 15px rgba(255, 255, 255, 0.2)',
@@ -38,8 +38,8 @@ const WorkoutSummaryChart = ({ workouts }) => {
                 variant="h6"
                 mb={2}
                 sx={{
-                    color: '#facc15',
-                    textShadow: '0 0 8px #facc15',
+                    color: '#000',
+                    textShadow: 'inset 0 0 8px #facc15',
                     textAlign: 'center',
                 }}
             >
@@ -50,8 +50,8 @@ const WorkoutSummaryChart = ({ workouts }) => {
                     {/* <CartesianGrid strokeDasharray="3 3" stroke="#444" /> */}
                     <XAxis dataKey="name" stroke="#facc15" />
                     <YAxis stroke="#facc15" />
-                    <Tooltip contentStyle={{ backgroundColor: '#222', borderColor: '#facc15', color: '#fff' }} />
-                    <Legend wrapperStyle={{ color: '#facc15' }} />
+                    <Tooltip contentStyle={{ backgroundColor: '#333', borderColor: '#fff', color: '#fff' }} />
+                    <Legend wrapperStyle={{ color: '#2ef' }} />
                     {/* Reps */}
                     <Bar dataKey="reps" fill="#ef4444" name="Reps" radius={[10, 10, 0, 0]} />
                     {/* Calories */}

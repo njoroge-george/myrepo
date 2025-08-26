@@ -28,9 +28,10 @@ import {
     Title,
     Tooltip,
     Legend,
+    Filler
 } from 'chart.js';
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, PointElement, LineElement, Title, Tooltip, Legend);
+ChartJS.register(CategoryScale, LinearScale, BarElement, PointElement, LineElement, Title, Tooltip, Legend, Filler);
 
 function NoteCard({ note, onUpdate, onDelete, onTogglePin }) {
     const [isEditing, setIsEditing] = useState(false);
@@ -134,6 +135,8 @@ export default function Journal() {
     const [newTag, setNewTag] = useState('idea');
     const [searchTerm, setSearchTerm] = useState('');
     const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState('');
+    const [alert, setAlert] = useState({ open: false, message: '', severity: 'success' });
 
     // Chart Data
     const notesByTag = notes.reduce(
@@ -221,10 +224,17 @@ export default function Journal() {
     const loadNotes = useCallback(async () => {
         try {
             setIsLoading(true);
+            setError('');
             const res = await getNotes();
-            setNotes(res.data.sort((a, b) => new Date(b.date) - new Date(a.date)));
+            let notesData = [];
+            if (Array.isArray(res)) notesData = res;
+            else if (Array.isArray(res.data)) notesData = res.data;
+            else notesData = [];
+            setNotes(notesData.sort((a, b) => new Date(b.date) - new Date(a.date)));
         } catch (error) {
-            console.error('Failed to load notes:', error);
+            setError('Failed to load notes');
+            setAlert({ open: true, message: 'Failed to load notes', severity: 'error' });
+            setNotes([]);
         } finally {
             setIsLoading(false);
         }
@@ -235,27 +245,51 @@ export default function Journal() {
     }, [loadNotes]);
 
     const handleAddNote = async () => {
-        if (!newNote.trim()) return;
-        const noteData = { text: newNote, date: new Date().toISOString(), tags: newTag, pinned: false };
-        const res = await addNote(noteData);
-        setNotes(prevNotes => [res.data, ...prevNotes]);
-        setNewNote('');
+        if (!newNote.trim()) return setAlert({ open: true, message: 'Note text required', severity: 'warning' });
+        try {
+            const noteData = { text: newNote, date: new Date().toISOString(), tags: newTag, pinned: false };
+            const res = await addNote(noteData);
+            const savedNote = res?.data ?? res;
+            if (!savedNote.id) throw new Error('Invalid note returned');
+            setNotes(prevNotes => [savedNote, ...prevNotes]);
+            setNewNote('');
+            setAlert({ open: true, message: 'Note added!', severity: 'success' });
+        } catch (err) {
+            setAlert({ open: true, message: 'Failed to add note', severity: 'error' });
+        }
     };
 
     const handleDeleteNote = async (id) => {
-        await deleteNote(id);
-        setNotes(prevNotes => prevNotes.filter(note => note.id !== id));
+        try {
+            await deleteNote(id);
+            setNotes(prevNotes => prevNotes.filter(note => note.id !== id));
+            setAlert({ open: true, message: 'Note deleted.', severity: 'success' });
+        } catch (err) {
+            setAlert({ open: true, message: 'Failed to delete note', severity: 'error' });
+        }
     };
 
     const handleUpdateNote = async (id, updatedData) => {
-        const res = await updateNote(id, updatedData);
-        setNotes(prevNotes => prevNotes.map(note => (note.id === id ? res.data : note)));
+        try {
+            const res = await updateNote(id, updatedData);
+            const updatedNote = res?.data ?? res;
+            setNotes(prevNotes => prevNotes.map(note => (note.id === id ? updatedNote : note)));
+            setAlert({ open: true, message: 'Note updated.', severity: 'success' });
+        } catch (err) {
+            setAlert({ open: true, message: 'Failed to update note', severity: 'error' });
+        }
     };
 
     const handleTogglePin = async (id, currentPinned) => {
-        const res = await updateNote(id, { pinned: !currentPinned });
-        setNotes(prevNotes => prevNotes.map(note => (note.id === id ? res.data : note)));
+        try {
+            const res = await updateNote(id, { pinned: !currentPinned });
+            const updatedNote = res?.data ?? res;
+            setNotes(prevNotes => prevNotes.map(note => (note.id === id ? updatedNote : note)));
+        } catch (err) {
+            setAlert({ open: true, message: 'Failed to pin/unpin note', severity: 'error' });
+        }
     };
+
 
     const exportNotes = () => {
         const dataStr = JSON.stringify(notes, null, 2);

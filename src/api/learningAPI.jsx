@@ -1,50 +1,85 @@
-// src/api/learningAPI.jsx
-import apiClient from './apiClient.jsx';
+import apiClient from './apiClient';
 
-// Get all courses
-export const getCourses = async () => {
-    const res = await apiClient.get('/courses');
+// --- Courses ---
+export async function getCourses() {
+    const res = await apiClient.get('/learning/courses');
     return res.data;
-};
+}
 
-// Add all courses
-export const addCourse = async (course) => {
-    const res = await apiClient.get('/course', course);
+export async function addCourse(course) {
+    const res = await apiClient.post('/learning/courses', course);
     return res.data;
-};
+}
 
-// Get all achievements
-export const getAchievements = async () => {
-    const res = await apiClient.get('/achievements');
+export async function updateCourse(id, course) {
+    const res = await apiClient.put(`/learning/courses/${id}`, course);
     return res.data;
-};
+}
 
-// Add a new achievement
-export const addAchievement = async (achievement) => {
-    const res = await apiClient.post('/achievements', achievement);
+export async function deleteCourse(id) {
+    const res = await apiClient.delete(`/learning/courses/${id}`);
     return res.data;
-};
+}
 
-// Get all resources
-export const getResources = async () => {
-    const res = await apiClient.get('/resources');
+// --- Achievements ---
+export async function getAchievements() {
+    const res = await apiClient.get('/learning/achievements');
     return res.data;
-};
+}
 
-// Add a new resource
-export const addResource = async (resource) => {
-    const res = await apiClient.post('/resources', resource);
+export async function addAchievement(achievement) {
+    const res = await apiClient.post('/learning/achievements', achievement);
     return res.data;
-};
+}
 
-// Get all practice logs
-export const getPracticeLogs = async () => {
-    const res = await apiClient.get('/practice-logs');
+export async function updateAchievement(id, achievement) {
+    const res = await apiClient.put(`/learning/achievements/${id}`, achievement);
     return res.data;
-};
+}
 
-// Add a new practice log
-export const addPracticeLog = async (log) => {
-    const res = await apiClient.post('/practice-logs', log);
+export async function deleteAchievement(id) {
+    const res = await apiClient.delete(`/learning/achievements/${id}`);
     return res.data;
-};
+}
+
+// --- Resources ---
+export async function getResources() {
+    const res = await apiClient.get('/learning/resources');
+    return res.data;
+}
+
+export async function addResource(resource) {
+    const res = await apiClient.post('/learning/resources', resource);
+    return res.data;
+}
+
+export async function updateResource(id, resource) {
+    const res = await apiClient.put(`/learning/resources/${id}`, resource);
+    return res.data;
+}
+
+export async function deleteResource(id) {
+    const res = await apiClient.delete(`/learning/resources/${id}`);
+    return res.data;
+}
+
+// --- Practice Logs ---
+export async function getPracticeLogs() {
+    const res = await apiClient.get('/learning/practice-logs');
+    return res.data;
+}
+
+export async function addPracticeLog(log) {
+    const res = await apiClient.post('/learning/practice-logs', log);
+    return res.data;
+}
+
+export async function updatePracticeLog(id, log) {
+    const res = await apiClient.put(`/learning/practice-logs/${id}`, log);
+    return res.data;
+}
+
+export async function deletePracticeLog(id) {
+    const res = await apiClient.delete(`/learning/practice-logs/${id}`);
+    return res.data;
+}

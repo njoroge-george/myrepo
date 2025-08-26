@@ -1,13 +1,12 @@
-
+// src/api/apiClient.jsx
 import axios from 'axios';
 
-const BASE_URL = import.meta.env.VITE_BASE_URL;
-
 const apiClient = axios.create({
-    baseURL: BASE_URL,
+    baseURL: import.meta.env.VITE_BASE_URL || 'http://localhost:5001/api',
     headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
     },
+    withCredentials: true
 });
 
 export default apiClient;

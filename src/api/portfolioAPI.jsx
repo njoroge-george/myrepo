@@ -1,14 +1,13 @@
 // src/api/portfolioAPI.jsx
 import apiClient from './apiClient.jsx';
 
-// Get portfolio
+// Portfolio
 export const getPortfolio = async () => {
   const res = await apiClient.get('/portfolio');
-  return res.data;
+  return Array.isArray(res.data) ? res.data : [];
 };
 
-// Create portfolio
 export const createPortfolio = async (portfolioData) => {
   const res = await apiClient.post('/portfolio', portfolioData);
-  return res.data;
+  return res.data || {};
 };
