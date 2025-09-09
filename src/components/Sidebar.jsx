@@ -19,6 +19,8 @@ import ChatIcon from '@mui/icons-material/Settings';
 import EmailIcon from '@mui/icons-material/Email';
 import FaxIcon from '@mui/icons-material/Fax';
 import ScoreIcon from '@mui/icons-material/Score';
+import CodeIcon from '@mui/icons-material/Code';
+import PianoIcon from '@mui/icons-material/Piano';
 
 const navItems = [
   { text: 'Overview', path: '/overview', icon: <DashboardIcon /> },
@@ -36,6 +38,9 @@ const navItems = [
     { text: 'Contact', path: '/contact', icon: <EmailIcon /> },
     { text: 'AdminMail', path: '/adminmail', icon: <FaxIcon /> },
     { text: 'GradePage', path: '/gradepage', icon: <ScoreIcon /> },
+  { text: 'Documents', path: '/documents', icon: <CodeIcon /> },
+  { text: 'BackendCode', path: '/backendcode', icon: <CodeIcon /> },
+  { text: 'ChordManager', path: '/chordmanager', icon: <PianoIcon /> },
 ];
 
 const Sidebar = () => {
