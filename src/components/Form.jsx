@@ -30,9 +30,10 @@ export default function Form({ onAdd, workoutToEdit }) {
             "Front Stretch Push-ups",
             "Wide Push-ups",
             "Decline full body Push-ups",
+
         ],
         Legs: ["Squats"],
-        Abs: ["Front Barbell Raise", "Sit-ups", "Bicycle Crunches"],
+        Abs: ["Front Barbell Raise", "Flutter Kicks", "Sit-ups", "Bicycle Crunches"],
         FullBody: ["Running"],
         Glutes: ["Glute Bridges"],
         Shoulders: ["Pike Push-ups", "Triceps Dips"],

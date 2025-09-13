@@ -24,7 +24,7 @@ export default function Footer() {
                 py: { xs: 0.5, md: 0.75 },
                 px: { xs: 0.5, md: 2 },
                 fontSize: { xs: 12, md: 14 },
-                minHeight: 38,
+                minHeight: 5,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
