@@ -1,108 +1,112 @@
-import React, { useState, useEffect } from 'react';
-import { Box } from '@mui/material';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import {
-    Routes,
-    Route,
-    Navigate,
-    useNavigate,
-} from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { CssBaseline, ThemeProvider } from "@mui/material";
+import { Routes, Route, Navigate } from "react-router-dom";
 
-import Sidebar from './components/Sidebar.jsx';
-import Topbar from './components/Topbar.jsx';
-import Footer from './components/Footer.jsx';
+// Layout
+import Layout from "./components/Layout.jsx";
 
-import Dashboard from './pages/Dashboard.jsx';
-import Contacts from './pages/Contacts.jsx';
-import Finance from './pages/Finance.jsx';
-import Fitness from './pages/Fitness.jsx';
-import Journal from './pages/Journal.jsx';
-import Projects from './pages/Projects.jsx';
-import Skills from './pages/Skills.jsx';
-import ChatPage from './pages/ChatPage.jsx';
-import To_do from './pages/Todo.jsx';
-import ContactCommunications from './pages/ContactCommunications';
-import Recipe from './pages/Recipe.jsx';
-import Portfolio from './pages/Portfolio.jsx';
-import ContactPage from './pages/VcontactsPage.jsx';
-import AdminMailPage from './pages/AdminMailPage.jsx';
-import GradePage from './pages/GradePage.jsx';
+// Pages
+import Dashboard from "./pages/Dashboard.jsx";
+import Contacts from "./pages/Contacts.jsx";
+import Finance from "./pages/Finance.jsx";
+import Fitness from "./pages/Fitness.jsx";
+import Journal from "./pages/Journal.jsx";
+import Projects from "./pages/Projects.jsx";
+import Skills from "./pages/Skills.jsx";
+import ChatPage from "./pages/ChatPage.jsx";
+import To_do from "./pages/Todo.jsx";
+import ContactCommunications from "./pages/ContactCommunications.jsx";
+import Recipe from "./pages/Recipe.jsx";
+import Portfolio from "./pages/Portfolio.jsx";
+import ContactPage from "./pages/VcontactsPage.jsx";
+import AdminMailPage from "./pages/AdminMailPage.jsx";
+import GradePage from "./pages/GradePage.jsx";
 import Documents from "./pages/Documents.jsx";
-import Register from "./components/Register.jsx";
-import Login from "./components/Login.jsx";
-import BackendCode  from "./pages/BackendCode.jsx";
-import ChordManager from './pages/ChordManager.jsx';
+import BackendCode from "./pages/BackendCode.jsx";
+import ChordManager from "./pages/ChordManager.jsx";
+import Accounts from "./pages/Accounts.jsx";
+import Coding from "./pages/Coding.jsx";
+import Settings from "./pages/Settings.jsx";
+import Profile from "./pages/Profile.jsx";
+import Challenges from "./pages/Challenges.jsx";
+import ChallengeDetail from "./components/coders/ChallengeDetail.jsx";
 
-function Layout({ children, collapsed, setCollapsed }) {
-    return (
-        <Box sx={{ display: 'flex', height: '100vh' }}>
-            <Sidebar collapsed={collapsed} />
-            <Box sx={{ flexGrow: 1 }}>
-                <Topbar collapsed={collapsed} setCollapsed={setCollapsed} />
-                {children}
-                <Box sx={{ pb: { xs: 5, md: 6 } }}>
-                    <Footer />
-                </Box>
-            </Box>
-        </Box>
-    );
-}
+// Auth
+import Register from "./components/auth/Register.jsx";
+import Login from "./components/auth/Login.jsx";
+import { ProtectedRoute } from "./components/auth/ProtectedRoute.jsx";
 
+// Theme Context
+import { useThemeContext } from "./ThemeContext.jsx";
 
-// ✅ Protect routes
-function PrivateRoute({ children }) {
-    const token = localStorage.getItem("token");
-    return token ? children : <Navigate to="/login" />;
-}
-
-const theme = createTheme();
-
-export default function App() {
+// ✅ App Component
+function App() {
     const [collapsed, setCollapsed] = useState(false);
-    const [authenticated, setAuthenticated] = useState(!!localStorage.getItem("token"));
+    const [auth, setAuth] = useState(() => {
+        const token = localStorage.getItem("token");
+        if (!token) return null;
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        return { token, role: payload.role };
+    });
 
-    // Auto-refresh authentication state
-    useEffect(() => {
-        setAuthenticated(!!localStorage.getItem("token"));
-    }, []);
-
-    useEffect(() => {
-        // Always clear token on refresh
-        localStorage.removeItem("token");
-        setAuthenticated(false);
-    }, []);
-
+    const { theme } = useThemeContext();
 
     return (
         <ThemeProvider theme={theme}>
+            <CssBaseline />
             <Routes>
-                {/* Public routes */}
-                <Route path="/login" element={<Login setAuthenticated={setAuthenticated} />} />
+                {/* Public Routes */}
+                <Route path="/login" element={<Login setAuthenticated={setAuth} />} />
                 <Route path="/register" element={<Register />} />
 
-                {/* Private dashboard routes */}
-                <Route path="/overview" element={<PrivateRoute><Layout collapsed={collapsed} setCollapsed={setCollapsed}><Dashboard /></Layout></PrivateRoute>} />
-                <Route path="/contacts" element={<PrivateRoute><Layout collapsed={collapsed} setCollapsed={setCollapsed}><Contacts /></Layout></PrivateRoute>} />
-                <Route path="/finance" element={<PrivateRoute><Layout collapsed={collapsed} setCollapsed={setCollapsed}><Finance /></Layout></PrivateRoute>} />
-                <Route path="/fitness" element={<PrivateRoute><Layout collapsed={collapsed} setCollapsed={setCollapsed}><Fitness /></Layout></PrivateRoute>} />
-                <Route path="/journal" element={<PrivateRoute><Layout collapsed={collapsed} setCollapsed={setCollapsed}><Journal /></Layout></PrivateRoute>} />
-                <Route path="/projects" element={<PrivateRoute><Layout collapsed={collapsed} setCollapsed={setCollapsed}><Projects /></Layout></PrivateRoute>} />
-                <Route path="/skills" element={<PrivateRoute><Layout collapsed={collapsed} setCollapsed={setCollapsed}><Skills /></Layout></PrivateRoute>} />
-                <Route path="/contacts/:contactId/comms" element={<PrivateRoute><Layout collapsed={collapsed} setCollapsed={setCollapsed}><ContactCommunications /></Layout></PrivateRoute>} />
-                <Route path="/portfolio" element={<PrivateRoute><Layout collapsed={collapsed} setCollapsed={setCollapsed}><Portfolio /></Layout></PrivateRoute>} />
-                <Route path="/to_do" element={<PrivateRoute><Layout collapsed={collapsed} setCollapsed={setCollapsed}><To_do /></Layout></PrivateRoute>} />
-                <Route path="/recipe" element={<PrivateRoute><Layout collapsed={collapsed} setCollapsed={setCollapsed}><Recipe /></Layout></PrivateRoute>} />
-                <Route path="/chat" element={<PrivateRoute><Layout collapsed={collapsed} setCollapsed={setCollapsed}><ChatPage /></Layout></PrivateRoute>} />
-                <Route path="/contact" element={<PrivateRoute><Layout collapsed={collapsed} setCollapsed={setCollapsed}><ContactPage /></Layout></PrivateRoute>} />
-                <Route path="/adminmail" element={<PrivateRoute><Layout collapsed={collapsed} setCollapsed={setCollapsed}><AdminMailPage /></Layout></PrivateRoute>} />
-                <Route path="/gradepage" element={<PrivateRoute><Layout collapsed={collapsed} setCollapsed={setCollapsed}><GradePage /></Layout></PrivateRoute>} />
-                <Route path="/documents" element={<PrivateRoute><Layout collapsed={collapsed} setCollapsed={setCollapsed}><Documents /></Layout></PrivateRoute>} />
-                <Route path="/backendcode" element={<PrivateRoute><Layout collapsed={collapsed} setCollapsed={setCollapsed}><BackendCode /></Layout></PrivateRoute>} />
-                <Route path="/chordmanager" element={<PrivateRoute><Layout collapsed={collapsed} setCollapsed={setCollapsed}><ChordManager /></Layout></PrivateRoute>} />
+                {/* Protected Routes */}
+                {[
+                    { path: "/overview", element: <Dashboard /> },
+                    { path: "/contacts", element: <Contacts /> },
+                    { path: "/contacts/:contactId/comms", element: <ContactCommunications /> },
+                    { path: "/finance", element: <Finance /> },
+                    { path: "/fitness", element: <Fitness /> },
+                    { path: "/journal", element: <Journal /> },
+                    { path: "/projects", element: <Projects /> },
+                    { path: "/skills", element: <Skills /> },
+                    { path: "/portfolio", element: <Portfolio /> },
+                    { path: "/to_do", element: <To_do /> },
+                    { path: "/recipe", element: <Recipe /> },
+                    { path: "/chat", element: <ChatPage /> },
+                    { path: "/contact", element: <ContactPage /> },
+                    { path: "/adminmail", element: <AdminMailPage />, roles: ["admin"] },
+                    { path: "/gradepage", element: <GradePage /> },
+                    { path: "/documents", element: <Documents /> },
+                    { path: "/backendcode", element: <BackendCode /> },
+                    { path: "/chordmanager", element: <ChordManager /> },
+                    { path: "/accounts", element: <Accounts /> },
+                    { path: "/coding", element: <Coding /> },
+                    { path: "/settings", element: <Settings /> },
+                    { path: "/profile", element: <Profile /> },
+                    { path: "/challenges", element: <Challenges /> },
+                    { path: "challenge/:id", element: <ChallengeDetail />}
+                ].map(({ path, element, roles = ["admin", "participant"] }) => (
+                    <Route
+                        key={path}
+                        path={path}
+                        element={
+                            <ProtectedRoute allowedRoles={roles} auth={auth}>
+                                <Layout collapsed={collapsed} setCollapsed={setCollapsed}>
+                                    {element}
+                                </Layout>
+                            </ProtectedRoute>
+                        }
+                    />
+                ))}
 
-                {/* Default redirect */}
-                <Route path="*" element={<Navigate to={authenticated ? "/overview" : "/login"} />} />
+                {/* Fallback */}
+                <Route
+                    path="*"
+                    element={<Navigate to={auth ? "/overview" : "/login"} />}
+                />
             </Routes>
         </ThemeProvider>
     );
 }
+
+export default App;

@@ -1,27 +1,16 @@
-import React from "react";
-import { Card, CardContent, Typography, Chip, Stack } from "@mui/material";
+import { Card, Typography, Avatar, Tooltip, Box } from "@mui/material";
 
-export default function Badges({ workouts }) {
-    const total = workouts.length;
-    const badges = [];
-
-    if (total >= 5) badges.push("Beginner");
-    if (total >= 15) badges.push("Intermediate");
-    if (total >= 30) badges.push("Advanced");
-    if (total >= 50) badges.push("Beast Mode");
-
+export default function FitnessBadgesCard({ badges }) {
     return (
-        <Card>
-            <CardContent>
-                <Typography variant="h6" gutterBottom>
-                    Achievements
-                </Typography>
-                <Stack direction="row" spacing={1}>
-                    {badges.map((badge) => (
-                        <Chip key={badge} label={badge} color="primary" />
-                    ))}
-                </Stack>
-            </CardContent>
+        <Card sx={{ p: 3, borderRadius: 3, boxShadow: 2 }}>
+            <Typography variant="h6" mb={2}>Badges Earned</Typography>
+            <Box display="flex" gap={2} flexWrap="wrap">
+                {badges.map((badge, i) => (
+                    <Tooltip key={i} title={badge.name}>
+                        <Avatar src={badge.image} alt={badge.name} />
+                    </Tooltip>
+                ))}
+            </Box>
         </Card>
     );
 }

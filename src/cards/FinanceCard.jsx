@@ -5,6 +5,7 @@ import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import MoneyOffIcon from '@mui/icons-material/MoneyOff';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
+import { useNavigate } from 'react-router-dom';
 
 export default function FinanceCard({ cardStyle }) {
     const [stats, setStats] = useState({
@@ -15,6 +16,7 @@ export default function FinanceCard({ cardStyle }) {
         total: 0,
     });
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
     useEffect(() => {
         async function fetchStats() {
@@ -41,8 +43,13 @@ export default function FinanceCard({ cardStyle }) {
         fetchStats();
     }, []);
 
+    const handleClick = () => {
+        // Navigate to detailed page
+        navigate('/finance-details');
+    };
+
     return (
-        <Card sx={cardStyle}>
+        <Card sx={{ cursor: 'pointer', ...cardStyle }} onClick={handleClick}>
             <CardContent>
                 <Typography variant="h6" mb={1}>Finance Overview</Typography>
                 {loading ? (

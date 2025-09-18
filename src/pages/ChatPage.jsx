@@ -1,15 +1,15 @@
 // src/pages/ChatPage.jsx
 import React, { useState, useEffect, useRef } from 'react';
-import { fetchChatHistory, createChatSocket } from '../api/Chat.jsx';
 import {
     Box, Paper, List, ListItem, ListItemAvatar, Avatar, ListItemText,
-    Typography, TextField, Button, Divider, Stack, IconButton
+    Typography, TextField, Button, Divider, Stack, IconButton, CircularProgress
 } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import PersonIcon from '@mui/icons-material/Person';
 import PeopleIcon from '@mui/icons-material/People';
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
-import CircularProgress from '@mui/material/CircularProgress';
+
+import { fetchChatHistory, createChatSocket } from '../api/Chat.jsx';
 
 const ChatPage = () => {
     const [messages, setMessages] = useState([]);
@@ -18,58 +18,74 @@ const ChatPage = () => {
     const [typingUsers, setTypingUsers] = useState([]);
     const [username, setUsername] = useState('');
     const [joined, setJoined] = useState(false);
-    const chatSocketRef = useRef();
+    const [roomName, setRoomName] = useState('');
+    const [rooms, setRooms] = useState(['General', 'Random', 'Tech']);
+    const chatRef = useRef();
     const messagesEndRef = useRef();
 
+ //FetchchatHistory
+     useEffect(() => {
+         if (!roomName) return;
+         const getHistory = async () => {
+             try{
+                 const history = await fetchChatHistory(roomName);
+                 setMessages(history);
+             }catch(err){
+                 console.error('Failed to fethc chat history:', err);
+             }
+         };
+         getHistory();
+     }, [roomName]);
+
+    // Initialize socket when joined and roomName is set
     useEffect(() => {
-        if (!joined) return;
-        chatSocketRef.current = createChatSocket(username);
+        if (!joined || !roomName) return;
 
-        chatSocketRef.current.onMessage(msg => {
-            setMessages(prev => [...prev, msg]);
-        });
+        chatRef.current = createChatSocket(username, roomName);
 
-        chatSocketRef.current.onUsers(userList => {
-            setUsers(userList);
-        });
-
-        chatSocketRef.current.onTyping(({ username: typingUser, isTyping }) => {
+        // Subscribe to socket events
+        chatRef.current.onMessage(msg => setMessages(prev => [...prev, msg]));
+        chatRef.current.onUsers(setUsers);
+        chatRef.current.onTyping(({ username: typingUser, isTyping }) => {
             setTypingUsers(prev => {
-                if (isTyping) {
-                    return [...new Set([...prev, typingUser])];
-                } else {
-                    return prev.filter(u => u !== typingUser);
-                }
+                if (isTyping) return [...new Set([...prev, typingUser])];
+                else return prev.filter(u => u !== typingUser);
             });
         });
+        chatRef.current.onHistory(setMessages);
 
-        chatSocketRef.current.onHistory(history => {
-            setMessages(history);
-        });
+        return () => chatRef.current.disconnect();
+    }, [joined, username, roomName]);
 
-        return () => {
-            chatSocketRef.current.disconnect();
-        };
-    }, [joined, username]);
-
+    // Auto-scroll
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
 
+    // Send message
     const sendMessage = e => {
         e.preventDefault();
-        if (input.trim()) {
-            chatSocketRef.current.sendMessage(input);
-            setInput('');
-            chatSocketRef.current.sendTyping(false);
-        }
+        if (!input.trim()) return;
+        chatRef.current.sendMessage(input);
+        setInput('');
+        chatRef.current.sendTyping(false);
     };
 
+    // Typing indicator
     const handleInputChange = e => {
         setInput(e.target.value);
-        chatSocketRef.current.sendTyping(!!e.target.value);
+        chatRef.current.sendTyping(!!e.target.value);
     };
 
+    // Switch room
+    const switchRoom = (newRoom) => {
+        if (newRoom === roomName) return;
+        chatRef.current.disconnect();
+        setRoomName(newRoom);
+        setMessages([]);
+    };
+
+    // Join screen
     if (!joined) {
         return (
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 10 }}>
@@ -84,11 +100,18 @@ const ChatPage = () => {
                             fullWidth
                             variant="outlined"
                         />
+                        <TextField
+                            label="Room"
+                            value={roomName}
+                            onChange={e => setRoomName(e.target.value)}
+                            fullWidth
+                            variant="outlined"
+                        />
                         <Button
                             variant="contained"
                             color="primary"
                             startIcon={<PersonIcon />}
-                            onClick={() => username && setJoined(true)}
+                            onClick={() => username && roomName && setJoined(true)}
                             fullWidth
                             size="large"
                         >
@@ -100,10 +123,28 @@ const ChatPage = () => {
         );
     }
 
+    // Chat screen
     return (
         <Box sx={{ display: 'flex', height: '100vh', bgcolor: '#f5f7fa' }}>
+            {/* Rooms List */}
+            <Paper elevation={2} sx={{ width: 180, p: 2, borderRadius: 0 }}>
+                <Typography variant="h6" fontWeight="bold" mb={1}>Rooms</Typography>
+                <List>
+                    {rooms.map(r => (
+                        <ListItem
+                            key={r}
+                            button
+                            selected={r === roomName}
+                            onClick={() => switchRoom(r)}
+                        >
+                            <ListItemText primary={r} />
+                        </ListItem>
+                    ))}
+                </List>
+            </Paper>
+
             {/* Users List */}
-            <Paper elevation={2} sx={{ width: 280, p: 2, borderRadius: 0 }}>
+            <Paper elevation={2} sx={{ width: 200, p: 2, borderRadius: 0 }}>
                 <Stack direction="row" alignItems="center" spacing={1} mb={2}>
                     <PeopleIcon color="primary" />
                     <Typography variant="h6" fontWeight="bold">Online Users</Typography>
@@ -138,30 +179,37 @@ const ChatPage = () => {
                         </Box>
                     )}
                     {messages.map((msg, idx) => (
-                        <Box key={idx} sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
-                            <Avatar sx={{ bgcolor: msg.username === username ? 'primary.main' : 'grey.400', mr: 1 }}>
-                                <PersonIcon />
-                            </Avatar>
-                            <Box>
-                                <Typography
-                                    variant="subtitle2"
-                                    fontWeight={msg.username === username ? 'bold' : 'normal'}
-                                    color={msg.username === username ? 'primary.main' : 'text.primary'}
-                                    component="span"
-                                >
-                                    {msg.username}
+                        <Box
+                            key={idx}
+                            sx={{
+                                mb: 2,
+                                display: 'flex',
+                                justifyContent: msg.User?.username === username ? 'flex-end' : 'flex-start'
+                            }}
+                        >
+                            <Paper
+                                elevation={1}
+                                sx={{
+                                    p: 1.5,
+                                    maxWidth: '70%',
+                                    bgcolor: msg.User?.username === username ? 'primary.main' : 'grey.200',
+                                    color: msg.User?.username === username ? 'white' : 'black',
+                                    borderRadius: 2
+                                }}
+                            >
+                                <Typography variant="subtitle2" fontWeight="bold">
+                                    {msg.User?.username || msg.username}
                                 </Typography>
-                                <Typography variant="body1" component="span" sx={{ ml: 1 }}>
-                                    {msg.text}
+                                <Typography variant="body1">{msg.text}</Typography>
+                                <Typography variant="caption" color="text.secondary">
+                                    {msg.createdAt ? new Date(msg.createdAt).toLocaleTimeString() : ''}
                                 </Typography>
-                                <Typography variant="caption" color="text.secondary" sx={{ ml: 2 }}>
-                                    {msg.time ? new Date(msg.time).toLocaleTimeString() : ''}
-                                </Typography>
-                            </Box>
+                            </Paper>
                         </Box>
                     ))}
                     <div ref={messagesEndRef} />
                 </Box>
+
                 <Divider />
                 <Box sx={{ p: 2, bgcolor: '#fff' }}>
                     {typingUsers.filter(u => u !== username).length > 0 && (

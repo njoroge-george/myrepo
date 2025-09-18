@@ -1,25 +1,48 @@
-import { useState } from "react";
-import { loginUser } from "../api/auth.jsx";
-import { Box, TextField, Button, Typography, Paper } from "@mui/material";
+import { useState, useContext } from "react";
+import { loginUser } from "../../api/auth.jsx";
+import {
+    Box,
+    TextField,
+    Button,
+    Typography,
+    Paper,
+    CircularProgress,
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "./AuthContext.jsx"; // ✅ make sure this matches your path
 
-export default function Login({ setAuthenticated }) {
+export default function Login() {
     const [form, setForm] = useState({ username: "", password: "" });
     const [message, setMessage] = useState("");
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const { setAuth } = useContext(AuthContext); // ✅ updates global auth state
 
     const handleChange = (e) =>
-        setForm({ ...form, [e.target.name]: e.target.value });
+        setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
+        setMessage("");
+
         try {
             const res = await loginUser(form);
-            localStorage.setItem("token", res.data.token);
-            setAuthenticated(true);
+            const token = res?.data?.token;
+
+            if (!token) throw new Error("No token received");
+
+            localStorage.setItem("token", token);
+
+            const payload = JSON.parse(atob(token.split(".")[1]));
+            const role = payload?.role || "admin";
+
+            setAuth({ token, role }); // ✅ updates context
             navigate("/overview");
         } catch (err) {
             setMessage(err.response?.data?.message || "Login failed.");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -33,22 +56,12 @@ export default function Login({ setAuthenticated }) {
                 bgcolor: "#f5f5f5",
             }}
         >
-            <Box
-                component={Paper}
-                elevation={3}
-                p={4}
-                maxWidth={400}
-                width="100%"
-                textAlign="center"
-            >
+            <Paper elevation={3} sx={{ p: 4, maxWidth: 400, width: "100%", textAlign: "center" }}>
                 <Typography variant="h5" fontWeight="bold" gutterBottom>
                     Login
                 </Typography>
 
-                <form
-                    onSubmit={handleSubmit}
-                    style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
-                >
+                <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                     <TextField
                         label="Username"
                         name="username"
@@ -64,8 +77,8 @@ export default function Login({ setAuthenticated }) {
                         onChange={handleChange}
                         required
                     />
-                    <Button variant="contained" color="primary" type="submit">
-                        Login
+                    <Button variant="contained" color="primary" type="submit" disabled={loading}>
+                        {loading ? <CircularProgress size={24} /> : "Login"}
                     </Button>
                 </form>
 
@@ -81,7 +94,7 @@ export default function Login({ setAuthenticated }) {
                         {message}
                     </Typography>
                 )}
-            </Box>
+            </Paper>
         </Box>
     );
 }

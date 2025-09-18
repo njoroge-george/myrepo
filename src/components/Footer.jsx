@@ -55,9 +55,7 @@ export default function Footer() {
             <Typography variant="body2" sx={{ mx: 1, fontSize: 13 }}>
                 &copy; {new Date().getFullYear()} G.Nichols Logistics Dashboard
             </Typography>
-            <Typography variant="caption" sx={{ mr: 1, fontSize: 11, color: "#e3f2fd" }}>
-                Made with <FavoriteIcon fontSize="small" color="error" sx={{ verticalAlign: "middle" }} /> React & MUI
-            </Typography>
+
         </Box>
     );
 }

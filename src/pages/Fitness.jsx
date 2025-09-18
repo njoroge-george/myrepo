@@ -8,17 +8,15 @@ import {
 } from "../api/fitnessAPI";
 
 // Components
-import WorkoutForm from "../../fitness/WorkoutForm";
-import WorkoutTable from "../../fitness/WorkoutTable";
-import AIAgent from "../../fitness/AIAgent";
-import EffectivenessChart from "../../fitness/EffectivenessChart";
-import WorkoutNotes from "../../fitness/WorkoutNotes";
-import Levels from "../../fitness/Levels";
-import Badges from "../../fitness/Badges";
-import CaloriesTracker from "../../fitness/CaloriesTracker";
-import ReminderNotifications from "../../fitness/ReminderNotifications";
-import WorkoutAnimation from "../../fitness/WorkoutAnimation";
-import WorkoutPlans from "../../fitness/WorkoutPlans";
+import WorkoutForm from "../components/fitness/WorkoutForm";
+import WorkoutTable from "../components/fitness/WorkoutTable";
+import AIAgent from "../components/fitness/AIAgent";
+import EffectivenessChart from "../components/fitness/EffectivenessChart";
+import WorkoutNotes from "../components/fitness/WorkoutNotes";
+import CaloriesTracker from "../components/fitness/CaloriesTracker";
+import ReminderNotifications from "../components/fitness/ReminderNotifications";
+import WorkoutAnimation from "../components/fitness/WorkoutAnimation";
+import WorkoutPlans from "../components/fitness/WorkoutPlans";
 
 export default function Fitness() {
   const [form, setForm] = useState({
@@ -132,9 +130,7 @@ export default function Fitness() {
             <Grid item xs={12} md={6}><AIAgent /></Grid>
             <Grid item xs={12} md={6}><EffectivenessChart workouts={workouts} /></Grid>
             <Grid item xs={12} md={6}><WorkoutNotes /></Grid>
-            <Grid item xs={12} md={6}><Levels workouts={workouts} /></Grid>
             <Grid item xs={12} md={6}><CaloriesTracker workouts={workouts} /></Grid>
-            <Grid item xs={12} md={6}><Badges workouts={workouts} /></Grid>
             <Grid item xs={12} md={6}><ReminderNotifications /></Grid>
             <Grid item xs={12} md={6}><WorkoutAnimation /></Grid>
             <Grid item xs={12}><WorkoutPlans /></Grid>

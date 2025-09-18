@@ -1,6 +1,6 @@
 import React from "react";
 import { Card, CardContent, TextField, Button, MenuItem, Stack, Typography, Box } from "@mui/material";
-import WorkoutAnimation from "./WorkoutAnimation"; // Make sure path is correct
+import WorkoutAnimation from "./WorkoutAnimation.jsx"; // Make sure path is correct
 
 export default function WorkoutForm({
                                         form,

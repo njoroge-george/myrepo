@@ -1,18 +1,17 @@
-import React from "react";
-import { Card, CardContent, Typography, LinearProgress } from "@mui/material";
+import { Card, Typography, LinearProgress, Box } from "@mui/material";
 
-export default function Levels({ workouts }) {
+export default function FitnessLevelCard({ workouts }) {
     const totalWorkouts = workouts.length;
-    const level = Math.floor(totalWorkouts / 5); // every 5 workouts = 1 level
-    const progress = (totalWorkouts % 5) * 20;
+    const level = Math.floor(totalWorkouts / 10);
+    const xp = totalWorkouts % 10;
+    const xpProgress = (xp / 10) * 100;
 
     return (
-        <Card>
-            <CardContent>
-                <Typography variant="h6">Level Progress</Typography>
-                <Typography>Current Level: {level}</Typography>
-                <LinearProgress variant="determinate" value={progress} sx={{ mt: 2 }} />
-            </CardContent>
+        <Card sx={{ p: 3, borderRadius: 3, boxShadow: 2 }}>
+            <Typography variant="h6" mb={2}>Level & XP</Typography>
+            <Typography variant="body1">Level: {level}</Typography>
+            <Typography variant="body2">XP: {xp}/10</Typography>
+            <LinearProgress variant="determinate" value={xpProgress} sx={{ mt: 1 }} />
         </Card>
     );
 }

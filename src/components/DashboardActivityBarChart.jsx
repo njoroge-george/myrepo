@@ -159,7 +159,7 @@ export default function DashboardActivityBarChart({ cardStyle }) {
                 ) : (
                     <Box sx={{ height: 400, width: "1200px" }}>
                         <Bar data={barData} options={barOptions} />
-                        <Typography variant="subtitle2" color="text.secondary" mt={2}>
+                        <Typography variant="subtitle2" color="text.secondary" mt={0.5}>
                             <span style={{ color: "#4caf50", fontWeight: 600 }}>Most Active:</span> {mostActive} ({stats[mostActive]} items)
                             {" | "}
                             <span style={{ color: "#d32f2f", fontWeight: 600 }}>Least Active:</span> {leastActive} ({stats[leastActive]} items)

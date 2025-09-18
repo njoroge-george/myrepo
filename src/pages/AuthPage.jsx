@@ -1,7 +1,7 @@
 // src/pages/AuthPage.jsx
 import { useState } from "react";
-import Login from "../components/Login";
-import Register from "../components/Register";
+import Login from "../components/auth/Login.jsx";
+import Register from "../components/auth/Register.jsx";
 
 export default function AuthPage({ onLogin }) {
     const [isLogin, setIsLogin] = useState(true);
