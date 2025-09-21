@@ -1,29 +1,53 @@
-// context/AuthContext.jsx
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect, useContext } from 'react';
 
 export const AuthContext = createContext();
+export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
-    const [auth, setAuth] = useState(null);
+  const [auth, setAuth] = useState({
+    token: null,
+    id: null,
+    role: null,
+    name: null,
+  });
 
-    useEffect(() => {
-  const token = localStorage.getItem("token");
-  if (token) {
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    setAuth({
-      token,
-      role: payload.role,
-      id: payload.id, // ✅ Add this line
-    name: payload.name, // optional, if available
-    });
-    localStorage.setItem("userId", payload.id); // ✅ Set for legacy access
-  }
-}, []);
+  const isAuthenticated = !!auth.token;
+  const isAdmin = auth.role === 'admin';
 
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
 
-    return (
-        <AuthContext.Provider value={{ auth, setAuth }}>
-            {children}
-        </AuthContext.Provider>
-    );
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      setAuth({
+        token,
+        id: payload.id || null,
+        role: payload.role || null,
+        name: payload.name || null,
+      });
+
+      localStorage.setItem('userId', payload.id || '');
+      console.log('✅ Decoded token payload:', payload);
+    } catch (err) {
+      console.error('❌ Invalid token:', err);
+      localStorage.removeItem('token');
+    }
+  }, []);
+
+  const setRole = (newRole) => {
+    setAuth((prev) => ({ ...prev, role: newRole }));
+  };
+
+  const logout = () => {
+    setAuth({ token: null, id: null, role: null, name: null });
+    localStorage.removeItem('token');
+    localStorage.removeItem('userId');
+  };
+
+  return (
+    <AuthContext.Provider value={{ auth, setAuth, setRole, logout, isAuthenticated, isAdmin }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };

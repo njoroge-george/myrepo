@@ -1,91 +1,135 @@
-import { useState } from "react";
+import React, { useState } from 'react';
 import {
-    Box,
-    TextField,
-    Button,
-    Typography,
-    MenuItem,
-    Paper,
-} from "@mui/material";
-import { createChallenge } from "../../api/Coding.jsx";
+  Box,
+  TextField,
+  Button,
+  MenuItem,
+  Chip,
+  Stack,
+  Typography,
+  Paper,
+  useMediaQuery,
+  useTheme
+} from '@mui/material';
+import { createChallenge } from '../../api/challenges';
+import { useNavigate } from 'react-router-dom';
 
-const difficulties = ["Easy", "Medium", "Hard"];
+const difficulties = ['Easy', 'Medium', 'Hard'];
 
-export const ChallengeForm = ({ onCreate }) => {
-    const [form, setForm] = useState({
-        title: "",
-        description: "",
-        difficulty: "Medium",
-        tags: "",
-    });
-    const [loading, setLoading] = useState(false);
+const ChallengeForm = () => {
+  const [form, setForm] = useState({
+    title: '',
+    description: '',
+    difficulty: '',
+    tags: [],
+    starterCode: '',
+  });
+  const [tagInput, setTagInput] = useState('');
+  const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-    const handleChange = (e) =>
-        setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        try {
-            const challengeData = {
-                ...form,
-                tags: form.tags,
-            };
-            const newChallenge = await createChallenge(challengeData);
-            onCreate(newChallenge); // update parent list
-            setForm({ title: "", description: "", difficulty: "Medium", tags: "" });
-        } catch (err) {
-            console.error("Challenge creation failed:", err);
-        } finally {
-            setLoading(false);
-        }
-    };
+  const handleAddTag = () => {
+    if (tagInput && !form.tags.includes(tagInput)) {
+      setForm({ ...form, tags: [...form.tags, tagInput] });
+      setTagInput('');
+    }
+  };
 
-    return (
-        <Paper sx={{ p: 3, mb: 4 }}>
-            <Typography variant="h6" gutterBottom>
-                Create New Challenge
-            </Typography>
-            <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-                <TextField
-                    label="Title"
-                    name="title"
-                    value={form.title}
-                    onChange={handleChange}
-                    required
-                />
-                <TextField
-                    label="Description"
-                    name="description"
-                    multiline
-                    rows={4}
-                    value={form.description}
-                    onChange={handleChange}
-                    required
-                />
-                <TextField
-                    label="Difficulty"
-                    name="difficulty"
-                    select
-                    value={form.difficulty}
-                    onChange={handleChange}
-                >
-                    {difficulties.map((level) => (
-                        <MenuItem key={level} value={level}>
-                            {level}
-                        </MenuItem>
-                    ))}
-                </TextField>
-                <TextField
-                    label="Tags (comma-separated)"
-                    name="tags"
-                    value={form.tags}
-                    onChange={handleChange}
-                />
-                <Button variant="contained" type="submit" disabled={loading}>
-                    {loading ? "Creating..." : "Create Challenge"}
-                </Button>
-            </form>
-        </Paper>
-    );
+  const handleDeleteTag = (tagToDelete) => {
+    setForm({ ...form, tags: form.tags.filter(tag => tag !== tagToDelete) });
+  };
+
+  const handleSubmit = async () => {
+    try {
+      await createChallenge(form); // Add token if needed
+      navigate('/challenges');
+    } catch (err) {
+      console.error('Challenge creation failed:', err);
+    }
+  };
+
+  return (
+    <Paper elevation={4} sx={{ p: 3, maxWidth: 800, mx: 'auto', mt: 4 }}>
+      <Typography variant={isMobile ? 'h6' : 'h5'} fontWeight="bold" gutterBottom>
+        Create New Challenge
+      </Typography>
+
+      <Stack spacing={2}>
+        <TextField
+          label="Title"
+          name="title"
+          value={form.title}
+          onChange={handleChange}
+          fullWidth
+        />
+
+        <TextField
+          label="Description"
+          name="description"
+          value={form.description}
+          onChange={handleChange}
+          multiline
+          rows={4}
+          fullWidth
+        />
+
+        <TextField
+          label="Difficulty"
+          name="difficulty"
+          value={form.difficulty}
+          onChange={handleChange}
+          select
+          fullWidth
+        >
+          {difficulties.map((level) => (
+            <MenuItem key={level} value={level}>
+              {level}
+            </MenuItem>
+          ))}
+        </TextField>
+
+        <Box>
+          <TextField
+            label="Add Tag"
+            value={tagInput}
+            onChange={(e) => setTagInput(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleAddTag()}
+            fullWidth
+          />
+          <Stack direction="row" spacing={1} sx={{ mt: 1, flexWrap: 'wrap' }}>
+            {form.tags.map((tag, idx) => (
+              <Chip
+                key={idx}
+                label={tag}
+                onDelete={() => handleDeleteTag(tag)}
+                size="small"
+              />
+            ))}
+          </Stack>
+        </Box>
+
+        <TextField
+          label="Starter Code"
+          name="starterCode"
+          value={form.starterCode}
+          onChange={handleChange}
+          multiline
+          rows={6}
+          fullWidth
+          sx={{ fontFamily: 'monospace' }}
+        />
+
+        <Button variant="contained" onClick={handleSubmit}>
+          Submit Challenge
+        </Button>
+      </Stack>
+    </Paper>
+  );
 };
+
+export default ChallengeForm;

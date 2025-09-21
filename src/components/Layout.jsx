@@ -1,58 +1,86 @@
-// Layout.jsx
 import React from "react";
-import { Box, useMediaQuery, useTheme } from "@mui/material";
+import { Box, useMediaQuery, useTheme, Toolbar } from "@mui/material";
 import Sidebar from "./Sidebar";
 import RightSidebar from "./RightSidebar";
 import Footer from "./Footer";
 import Topbar from "./Topbar";
 
 const Layout = ({ children, collapsed, setCollapsed }) => {
-    const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
-    return (
-        <Box display="flex" flexDirection="column" height="100vh" overflow="hidden">
-            {/* Sticky Topbar */}
-            <Box sx={{ position: "sticky", top: 0, zIndex: 1100 }}>
-                <Topbar collapsed={collapsed} setCollapsed={setCollapsed} />
-            </Box>
+  const sidebarWidth = collapsed ? 80 : 240;
+  const rightSidebarWidth = 240;
+  const topbarHeight = 100; // default MUI AppBar height
 
-            {/* Main Content Area */}
-            <Box display="flex" flex="1" overflow="hidden">
-                {/* Left Sidebar (hidden on mobile) */}
-                {!isMobile && (
-                    <Box sx={{ width: collapsed ? 80 : 240, flexShrink: 0 }}>
-                        <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
-                    </Box>
-                )}
+  return (
+    <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+      {/* Fixed Topbar */}
+      <Topbar collapsed={collapsed} setCollapsed={setCollapsed} />
 
-                {/* Scrollable Page Content */}
-                <Box
-                    flex="1"
-                    overflow="auto"
-                    p={{ xs: 1, md: 2 }}
-                    sx={{
-                        backgroundColor: "background.default",
-                        color: "text.primary",
-                    }}
-                >
-                    {children}
-                </Box>
+      {/* Spacer to offset Topbar height */}
+      <Toolbar />
 
-                {/* Right Sidebar (hidden on mobile) */}
-                {!isMobile && (
-                    <Box sx={{ width: 240, flexShrink: 0 }}>
-                        <RightSidebar />
-                    </Box>
-                )}
-            </Box>
+      {/* Main Layout */}
+      <Box
+        sx={{
+          display: "flex",
+          flex: 1,
+          overflow: "hidden",
+          height: `calc(100vh - ${topbarHeight}px)`,
+        }}
+      >
+        {/* Left Sidebar */}
+        {!isMobile && (
+          <Box
+            sx={{
+              width: sidebarWidth,
+              flexShrink: 0,
+              overflowY: "auto",
+              borderRight: "1px solid #ddd",
+              pt: 2,
+            }}
+          >
+            <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
+          </Box>
+        )}
 
-            {/* Sticky Footer */}
-            <Box sx={{ position: "sticky", bottom: 0, zIndex: 1000 }}>
-                <Footer />
-            </Box>
+        {/* Main Content */}
+        <Box
+          sx={{
+            flex: 1,
+            overflowY: "auto",
+            p: { xs: 1, md: 2 },
+            backgroundColor: "background.default",
+            color: "text.primary",
+            pt: 2,
+          }}
+        >
+          {children}
         </Box>
-    );
+
+        {/* Right Sidebar */}
+        {!isMobile && (
+          <Box
+            sx={{
+              width: rightSidebarWidth,
+              flexShrink: 0,
+              overflowY: "auto",
+              borderLeft: "1px solid #ddd",
+              pt: 2,
+            }}
+          >
+            <RightSidebar />
+          </Box>
+        )}
+      </Box>
+
+      {/* Footer */}
+      <Box sx={{ borderTop: "1px solid #ddd", px: 2, py: 1 }}>
+        <Footer />
+      </Box>
+    </Box>
+  );
 };
 
 export default Layout;

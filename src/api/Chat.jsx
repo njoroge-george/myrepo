@@ -8,11 +8,16 @@ let chatSocket;
  * ✅ Fetch chat history for a given room
  * @param {string} roomName
  */
-export const fetchChatHistory = async (roomName) => {
-    if (!roomName) return [];
+export const isValidRoom = async (room) => {
+  const rooms = await fetchRooms();
+  return rooms.some(r => r.name === room);
+};
+
+export const fetchChatHistory = async (room) => {
+    if (!room || room.length < 3) return [];
 
     try {
-        const res = await apiClient.get(`/chat/history?room=${roomName}`);
+        const res = await apiClient.get(`/chat/history?room=${room}`);
         return res.data.success ? res.data.data : [];
     } catch (err) {
         console.error("❌ Failed to fetch chat history:", err);
@@ -53,6 +58,10 @@ export const fetchOnlineUsers = async () => {
  */
 export const createChatSocket = (username, roomName) => {
     const BASE_URL = import.meta.env.VITE_BASE_URL || "http://localhost:5001";
+
+    if(chatSocket?.connected){
+        chatSocket.disconnect();
+    }
 
     // Connect specifically to the /chat namespace
     chatSocket = io(`${BASE_URL}/chat`, { transports: ["websocket"] });

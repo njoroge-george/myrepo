@@ -1,93 +1,70 @@
-import { useParams } from "react-router-dom";
-import { useEffect, useState, useContext } from "react";
+import React from 'react';
 import {
-    getChallenges,
-    getSubmissionsByChallenge,
-} from "../../api/Coding.jsx";
-import { CodeEditorPanel } from "./CodeEditorPanel.jsx";
-import { AuthContext } from "../auth/AuthContext.jsx";
-import { ChallengeLeaderboard } from "./ChallengeLeaderBoard.jsx";
-import {
-    Box,
-    Typography,
-    CircularProgress,
-    Paper,
-} from "@mui/material";
+  Box,
+  Typography,
+  Chip,
+  Stack,
+  Paper,
+  Divider,
+  useMediaQuery,
+  useTheme
+} from '@mui/material';
 
-export default function ChallengeDetail() {
-    const { id } = useParams();
-    const [challenge, setChallenge] = useState(null);
-    const [submissions, setSubmissions] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const { auth } = useContext(AuthContext);
+const difficultyColors = {
+  Easy: 'success',
+  Medium: 'warning',
+  Hard: 'error',
+};
 
-    useEffect(() => {
-        async function fetchData() {
-            try {
-                const all = await getChallenges();
-                const found = all.find((c) => c.id === parseInt(id));
-                setChallenge(found);
+const ChallengeDetail = ({ challenge }) => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-                const subs = await getSubmissionsByChallenge(id);
-                setSubmissions(subs);
-            } catch (err) {
-                console.error("Failed to load challenge detail:", err);
-            } finally {
-                setLoading(false);
-            }
-        }
-        fetchData();
-    }, [id]);
+  if (!challenge) return null;
 
-    if (loading) return <CircularProgress />;
-    if (!challenge) return <Typography>No challenge found.</Typography>;
+  return (
+    <Paper elevation={4} sx={{ p: 3, mb: 3 }}>
+      <Box display="flex" justifyContent="space-between" flexWrap="wrap">
+        <Typography variant={isMobile ? 'h6' : 'h5'} fontWeight="bold">
+          {challenge.title}
+        </Typography>
+        <Chip
+          label={challenge.difficulty}
+          color={difficultyColors[challenge.difficulty] || 'default'}
+          size="small"
+        />
+      </Box>
 
-    const isExpired = challenge?.expiresAt && new Date(challenge.expiresAt) < new Date();
+      <Typography variant="body1" sx={{ mt: 2 }}>
+        {challenge.description}
+      </Typography>
 
-    if (isExpired) {
-        return (
-            <Box p={3}>
-                <Typography variant="h4" color="error">
-                    This challenge has expired.
-                </Typography>
-            </Box>
-        );
-    }
+      <Stack direction="row" spacing={1} sx={{ mt: 2, flexWrap: 'wrap' }}>
+        {challenge.tags.map((tag, idx) => (
+          <Chip key={idx} label={tag} variant="outlined" size="small" />
+        ))}
+      </Stack>
 
+      <Divider sx={{ my: 3 }} />
 
-    return (
-        <Box p={3}>
-            <Typography variant="h4" gutterBottom>
-                {challenge.title}
-            </Typography>
-            <Typography variant="body1" gutterBottom>
-                {challenge.description}
-            </Typography>
-            <Typography variant="caption" color="text.secondary">
-                Difficulty: {challenge.difficulty}
-            </Typography>
+      <Typography variant="subtitle1" fontWeight="bold">
+        Starter Code
+      </Typography>
+      <Paper
+        variant="outlined"
+        sx={{
+          p: 2,
+          mt: 1,
+          backgroundColor: '#f5f5f5',
+          fontFamily: 'monospace',
+          whiteSpace: 'pre-wrap',
+          overflowX: 'auto',
+        }}
+      >
+        {challenge.starterCode || '// No starter code provided.'}
+      </Paper>
+    </Paper>
+  );
+};
 
-            <CodeEditorPanel challengeId={challenge.id} coderId={auth?.userId} />
-
-            <Typography variant="h6" sx={{ mt: 4 }}>
-                Submissions
-            </Typography>
-            {submissions.length === 0 ? (
-                <Typography>No submissions yet.</Typography>
-            ) : (
-                submissions.map((sub) => (
-                    <Box key={sub.id} sx={{ mb: 2 }}>
-                        <Typography variant="body2">
-                            Coder: {sub.coderId} | Submitted:{" "}
-                            {new Date(sub.createdAt).toLocaleString()}
-                        </Typography>
-                        <Paper sx={{ p: 2, mt: 1, whiteSpace: "pre-wrap", bgcolor: "#f9f9f9" }}>
-                            {sub.code}
-                        </Paper>
-                    </Box>
-                ))
-            )}
-            <ChallengeLeaderboard challengeId={challenge.id} />
-        </Box>
-    );
-}
+export default ChallengeDetail;

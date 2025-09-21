@@ -1,45 +1,61 @@
-import { useEffect, useState } from "react";
-import { getSubmissionsByChallenge } from "../../api/Coding.jsx";
+import React from 'react';
 import {
-    Box,
-    Typography,
-    Paper,
-    List,
-    ListItem,
-    ListItemText,
-} from "@mui/material";
+  Paper,
+  Typography,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  Avatar,
+  Box,
+  useMediaQuery,
+  useTheme
+} from '@mui/material';
 
-export const ChallengeLeaderboard = ({ challengeId }) => {
-    const [submissions, setSubmissions] = useState([]);
+const ChallengeLeaderboard = ({ submissions }) => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-    useEffect(() => {
-        async function fetchLeaderboard() {
-            const data = await getSubmissionsByChallenge(challengeId);
-            const sorted = data.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-            setSubmissions(sorted);
-        }
-        fetchLeaderboard();
-    }, [challengeId]);
+  if (!submissions || submissions.length === 0) return null;
 
-    return (
-        <Paper sx={{ p: 3, mt: 4 }}>
-            <Typography variant="h6" gutterBottom>
-                Leaderboard
-            </Typography>
-            {submissions.length === 0 ? (
-                <Typography>No submissions yet.</Typography>
-            ) : (
-                <List>
-                    {submissions.map((sub, index) => (
-                        <ListItem key={sub.id}>
-                            <ListItemText
-                                primary={`#${index + 1} - Coder ${sub.coderId}`}
-                                secondary={`Submitted: ${new Date(sub.createdAt).toLocaleString()}`}
-                            />
-                        </ListItem>
-                    ))}
-                </List>
-            )}
-        </Paper>
-    );
+  const sorted = [...submissions].sort((a, b) => b.score - a.score);
+
+  return (
+    <Paper elevation={3} sx={{ p: 3, mt: 3 }}>
+      <Typography variant={isMobile ? 'h6' : 'h5'} fontWeight="bold" gutterBottom>
+        Leaderboard
+      </Typography>
+
+      <Table size={isMobile ? 'small' : 'medium'}>
+        <TableHead>
+          <TableRow>
+            <TableCell>Coder</TableCell>
+            <TableCell>Score</TableCell>
+            <TableCell>Status</TableCell>
+            <TableCell>Submitted At</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {sorted.map((sub, idx) => (
+            <TableRow key={sub.id}>
+              <TableCell>
+                <Box display="flex" alignItems="center" gap={1}>
+                  <Avatar sx={{ width: 24, height: 24 }}>
+                    {sub.Coder?.name?.[0] || '?'}
+                  </Avatar>
+                  <Typography variant="body2">{sub.Coder?.name || 'Unknown'}</Typography>
+                </Box>
+              </TableCell>
+              <TableCell>{sub.score.toFixed(1)}%</TableCell>
+              <TableCell>{sub.status}</TableCell>
+              <TableCell>{new Date(sub.createdAt).toLocaleString()}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </Paper>
+  );
 };
+
+export default ChallengeLeaderboard;

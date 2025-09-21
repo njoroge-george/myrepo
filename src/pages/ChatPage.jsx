@@ -15,6 +15,7 @@ const ChatPage = () => {
     const [messages, setMessages] = useState([]);
     const [users, setUsers] = useState([]);
     const [input, setInput] = useState('');
+    const [inputRoom, setInputRoom] = useState('');
     const [typingUsers, setTypingUsers] = useState([]);
     const [username, setUsername] = useState('');
     const [joined, setJoined] = useState(false);
@@ -23,15 +24,24 @@ const ChatPage = () => {
     const chatRef = useRef();
     const messagesEndRef = useRef();
 
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null)
+
+
  //FetchchatHistory
      useEffect(() => {
          if (!roomName) return;
          const getHistory = async () => {
+            setLoading(true);
+            setError(null);
              try{
                  const history = await fetchChatHistory(roomName);
                  setMessages(history);
              }catch(err){
-                 console.error('Failed to fethc chat history:', err);
+                setError('Could not load chat history.');
+                 console.error('Failed to fetch chat history:', err);
+             }finally{
+                 setLoading(false);
              }
          };
          getHistory();
@@ -78,12 +88,25 @@ const ChatPage = () => {
     };
 
     // Switch room
-    const switchRoom = (newRoom) => {
-        if (newRoom === roomName) return;
-        chatRef.current.disconnect();
-        setRoomName(newRoom);
-        setMessages([]);
-    };
+  const switchRoom = async (room) => {
+    setInputRoom(room); // set the input field to the selected room
+    await handleRoomSubmit(); // trigger the join process
+
+  }
+
+const handleRoomSubmit = async () => {
+  const trimmed = inputRoom.trim();
+  if (trimmed.length < 3) return;
+
+  if (trimmed !== roomName) {
+    if (chatRef.current) chatRef.current.disconnect();
+    setRoomName(trimmed);
+    setMessages([]);
+    setJoined(false);
+  }
+};
+
+
 
     // Join screen
     if (!joined) {
@@ -133,7 +156,7 @@ const ChatPage = () => {
                     {rooms.map(r => (
                         <ListItem
                             key={r}
-                            button
+                            button 
                             selected={r === roomName}
                             onClick={() => switchRoom(r)}
                         >
@@ -217,21 +240,25 @@ const ChatPage = () => {
                             {typingUsers.filter(u => u !== username).join(', ')} {typingUsers.length === 1 ? 'is' : 'are'} typing...
                         </Typography>
                     )}
-                    <form onSubmit={sendMessage}>
-                        <Stack direction="row" spacing={2}>
-                            <TextField
-                                value={input}
-                                onChange={handleInputChange}
-                                placeholder="Type a message..."
-                                fullWidth
-                                variant="outlined"
-                                size="small"
-                            />
-                            <IconButton type="submit" color="primary" size="large" disabled={!input.trim()}>
-                                <SendIcon />
-                            </IconButton>
-                        </Stack>
-                    </form>
+                    <form
+    onSubmit={(e) => {
+      e.preventDefault();
+      sendMessage(e);
+    }}
+    style={{ display: 'flex', gap: '8px' }}
+  >
+    <TextField
+      placeholder="Type a message"
+      value={input}
+      onChange={handleInputChange}
+      fullWidth
+    />
+    <IconButton type="submit" color="primary" aria-label="send">
+      <SendIcon />
+    </IconButton>
+  </form>
+
+                    
                 </Box>
             </Box>
         </Box>

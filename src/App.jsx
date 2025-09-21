@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { Routes, Route, Navigate } from "react-router-dom";
 
@@ -14,7 +14,7 @@ import Journal from "./pages/Journal.jsx";
 import Projects from "./pages/Projects.jsx";
 import Skills from "./pages/Skills.jsx";
 import ChatPage from "./pages/ChatPage.jsx";
-import To_do from "./pages/Todo.jsx";
+import ToDo from "./pages/Todo.jsx";
 import ContactCommunications from "./pages/ContactCommunications.jsx";
 import Recipe from "./pages/Recipe.jsx";
 import Portfolio from "./pages/Portfolio.jsx";
@@ -29,84 +29,95 @@ import Coding from "./pages/Coding.jsx";
 import Settings from "./pages/Settings.jsx";
 import Profile from "./pages/Profile.jsx";
 import Challenges from "./pages/Challenges.jsx";
-import ChallengeDetail from "./components/coders/ChallengeDetail.jsx";
+import ChallengeView from "./components/coders/ChallengeView.jsx";
 
 // Auth
 import Register from "./components/auth/Register.jsx";
 import Login from "./components/auth/Login.jsx";
-import { ProtectedRoute } from "./components/auth/ProtectedRoute.jsx";
+import ProtectedRoute from "./components/auth/ProtectedRoute.jsx";
 
 // Theme Context
 import { useThemeContext } from "./ThemeContext.jsx";
 
-// ✅ App Component
+// 🔐 Role-based route config
+const protectedRoutes = [
+  { path: "/overview", element: <Dashboard /> },
+  { path: "/contacts", element: <Contacts /> },
+  { path: "/contacts/:contactId/comms", element: <ContactCommunications /> },
+  { path: "/finance", element: <Finance /> },
+  { path: "/fitness", element: <Fitness /> },
+  { path: "/journal", element: <Journal /> },
+  { path: "/projects", element: <Projects /> },
+  { path: "/skills", element: <Skills /> },
+  { path: "/portfolio", element: <Portfolio /> },
+  { path: "/to_do", element: <ToDo /> },
+  { path: "/recipe", element: <Recipe /> },
+  { path: "/chat", element: <ChatPage /> },
+  { path: "/contact", element: <ContactPage /> },
+  { path: "/adminmail", element: <AdminMailPage />, roles: ["admin"] },
+  { path: "/gradepage", element: <GradePage /> },
+  { path: "/documents", element: <Documents /> },
+  { path: "/backendcode", element: <BackendCode /> },
+  { path: "/chordmanager", element: <ChordManager /> },
+  { path: "/accounts", element: <Accounts /> },
+  { path: "/coding", element: <Coding /> },
+  { path: "/settings", element: <Settings /> },
+  { path: "/profile", element: <Profile /> },
+  { path: "/challenges", element: <Challenges /> },
+  { path: "/challenges/:id", element: <ChallengeView /> }
+];
+
+// 🧠 Auth bootstrap
+function getInitialAuth() {
+  const token = localStorage.getItem("token");
+  if (!token) return null;
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    return {
+      token,
+      id: payload.id || null,
+      role: payload.role || "participant",
+      name: payload.name || "User",
+    };
+  } catch {
+    return null;
+  }
+}
+
+// 🚀 App Component
 function App() {
-    const [collapsed, setCollapsed] = useState(false);
-    const [auth, setAuth] = useState(() => {
-        const token = localStorage.getItem("token");
-        if (!token) return null;
-        const payload = JSON.parse(atob(token.split(".")[1]));
-        return { token, role: payload.role };
-    });
+  const [collapsed, setCollapsed] = useState(false);
+  const [auth, setAuth] = useState(getInitialAuth);
+  const { theme } = useThemeContext();
 
-    const { theme } = useThemeContext();
+  return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Routes>
+        {/* Public Routes */}
+        <Route path="/login" element={<Login setAuthenticated={setAuth} />} />
+        <Route path="/register" element={<Register />} />
 
-    return (
-        <ThemeProvider theme={theme}>
-            <CssBaseline />
-            <Routes>
-                {/* Public Routes */}
-                <Route path="/login" element={<Login setAuthenticated={setAuth} />} />
-                <Route path="/register" element={<Register />} />
+        {/* Protected Routes */}
+        {protectedRoutes.map(({ path, element, roles = ["admin", "participant"] }) => (
+          <Route
+            key={path}
+            path={path}
+            element={
+              <ProtectedRoute allowedRoles={roles} auth={auth}>
+                <Layout collapsed={collapsed} setCollapsed={setCollapsed}>
+                  {element}
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+        ))}
 
-                {/* Protected Routes */}
-                {[
-                    { path: "/overview", element: <Dashboard /> },
-                    { path: "/contacts", element: <Contacts /> },
-                    { path: "/contacts/:contactId/comms", element: <ContactCommunications /> },
-                    { path: "/finance", element: <Finance /> },
-                    { path: "/fitness", element: <Fitness /> },
-                    { path: "/journal", element: <Journal /> },
-                    { path: "/projects", element: <Projects /> },
-                    { path: "/skills", element: <Skills /> },
-                    { path: "/portfolio", element: <Portfolio /> },
-                    { path: "/to_do", element: <To_do /> },
-                    { path: "/recipe", element: <Recipe /> },
-                    { path: "/chat", element: <ChatPage /> },
-                    { path: "/contact", element: <ContactPage /> },
-                    { path: "/adminmail", element: <AdminMailPage />, roles: ["admin"] },
-                    { path: "/gradepage", element: <GradePage /> },
-                    { path: "/documents", element: <Documents /> },
-                    { path: "/backendcode", element: <BackendCode /> },
-                    { path: "/chordmanager", element: <ChordManager /> },
-                    { path: "/accounts", element: <Accounts /> },
-                    { path: "/coding", element: <Coding /> },
-                    { path: "/settings", element: <Settings /> },
-                    { path: "/profile", element: <Profile /> },
-                    { path: "/challenges", element: <Challenges /> },
-                    { path: "challenge/:id", element: <ChallengeDetail />}
-                ].map(({ path, element, roles = ["admin", "participant"] }) => (
-                    <Route
-                        key={path}
-                        path={path}
-                        element={
-                            <ProtectedRoute allowedRoles={roles} auth={auth}>
-                                <Layout collapsed={collapsed} setCollapsed={setCollapsed}>
-                                    {element}
-                                </Layout>
-                            </ProtectedRoute>
-                        }
-                    />
-                ))}
-
-                {/* Fallback */}
-                <Route
-                    path="*"
-                    element={<Navigate to={auth ? "/overview" : "/login"} />}
-                />
-            </Routes>
-        </ThemeProvider>
-    );
+        {/* Fallback Route */}
+        <Route path="*" element={<Navigate to={auth ? "/overview" : "/login"} />} />
+      </Routes>
+    </ThemeProvider>
+  );
 }
 
 export default App;

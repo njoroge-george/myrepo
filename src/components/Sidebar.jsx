@@ -8,9 +8,13 @@ import {
   ListItemText,
   Typography,
   Box,
+  Toolbar,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { motion } from "framer-motion";
 
+// Icons
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
@@ -25,7 +29,7 @@ import FaxIcon from "@mui/icons-material/Fax";
 import ScoreIcon from "@mui/icons-material/Score";
 import CodeIcon from "@mui/icons-material/Code";
 import PianoIcon from "@mui/icons-material/Piano";
-import ChatIcon from "@mui/icons-material/Chat"; // ✅ Corrected icon
+import ChatIcon from "@mui/icons-material/Chat";
 
 const navItems = [
   { text: "Overview", path: "/overview", icon: <DashboardIcon /> },
@@ -34,7 +38,7 @@ const navItems = [
   { text: "Projects", path: "/projects", icon: <WorkIcon /> },
   { text: "Journal", path: "/journal", icon: <BookIcon /> },
   { text: "Contacts", path: "/contacts", icon: <ContactsIcon /> },
-  { text: "ContactCommunications", path: "/contacts/:contactId/comms", icon: <ContactsIcon /> },
+  { text: "ContactComms", path: "/contacts/:contactId/comms", icon: <ContactsIcon /> },
   { text: "Skills", path: "/skills", icon: <BuildIcon /> },
   { text: "To Do", path: "/to_do", icon: <ListAltIcon /> },
   { text: "Recipe", path: "/recipe", icon: <WorkIcon /> },
@@ -51,84 +55,93 @@ const navItems = [
   { text: "Settings", path: "/settings", icon: <SettingsIcon /> },
   { text: "Profile", path: "/profile", icon: <BookIcon /> },
   { text: "Challenges", path: "/challenges", icon: <BuildIcon /> },
+  { text: "Challenge View", path: "/challenges/:id", icon: <BuildIcon /> },
 ];
 
-const Sidebar = () => {
+const Sidebar = ({ collapsed }) => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const drawerWidth = collapsed ? 80 : 250;
+
   return (
-      <Drawer
-          variant="permanent"
-          anchor="left"
-          sx={{
-            width: 250,
-            flexShrink: 0,
-            "& .MuiDrawer-paper": {
-              width: 250,
-              boxSizing: "border-box",
-              background: "linear-gradient(90deg, #1583AA, #004081)",
-              backdropFilter: "blur(10px)",
-              color: "#000",
-              boxShadow: "inset 4px 0 1px rgba(0,0,0,0.6)",
-            },
-          }}
+    <Drawer
+      variant="permanent"
+      sx={{
+        width: drawerWidth,
+        flexShrink: 0,
+        display: { xs: "none", sm: "block" },
+        "& .MuiDrawer-paper": {
+          width: drawerWidth,
+          boxSizing: "border-box",
+          background: "linear-gradient(90deg, #1583AA, #004081)",
+          backdropFilter: "blur(10px)",
+          color: "#fff",
+          borderRight: "1px solid rgba(255,255,255,0.1)",
+        },
+      }}
+    >
+      {/* Spacer to offset Topbar */}
+      <Toolbar />
+
+      <motion.div
+        initial={{ x: -100, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ duration: 0.5 }}
       >
-        <motion.div
-            initial={{ x: -100, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-        >
-          <Box sx={{ p: 2 }}>
-            <Typography
-                variant="h6"
-                sx={{
-                  color: "#00eb3b",
-                  mb: 2,
-                  textShadow: "inset 0px 0px 10px rgba(255,255,100,0.8)",
-                  fontWeight: "bold",
-                }}
-            >
-              Logistics
-            </Typography>
-            <List>
-              {navItems.map(({ text, path, icon }, index) => (
-                  <motion.div
-                      key={text}
-                      initial={{ x: -20, opacity: 0 }}
-                      animate={{ x: 0, opacity: 1 }}
-                      transition={{ delay: index * 0.05, duration: 0.4 }}
-                      whileHover={{
-                        scale: 1.05,
-                        boxShadow: "0px 0px 2px rgba(110, 255, 5, 0.6)",
-                      }}
-                  >
-                    <ListItemButton
-                        component={NavLink}
-                        to={path}
-                        sx={{
-                          borderRadius: 2,
-                          mb: 1,
-                          color: "#000",
-                          transition: "all 0.3s ease",
-                          "&.active": {
-                            background: "linear-gradient(300deg, #0083DA, #008700)",
-                            color: "#fff",
-                            boxShadow: "inset 0px 0px 12px rgba(255,255,255,0.4)",
-                          },
-                        }}
-                    >
-                      <ListItemIcon sx={{ color: "inherit" }}>{icon}</ListItemIcon>
-                      <ListItemText
-                          primary={text}
-                          sx={{
-                            "& span": { fontWeight: "bold", letterSpacing: "0.5px" },
-                          }}
-                      />
-                    </ListItemButton>
-                  </motion.div>
-              ))}
-            </List>
-          </Box>
-        </motion.div>
-      </Drawer>
+        <Box sx={{ p: 2 }}>
+          <Typography
+            variant="h6"
+            sx={{
+              color: "#00eb3b",
+              mb: 2,
+              fontWeight: "bold",
+              textShadow: "0px 0px 6px rgba(255,255,255,0.4)",
+            }}
+          >
+            Logistics
+          </Typography>
+
+          <List>
+            {navItems.map(({ text, path, icon }, index) => (
+              <motion.div
+                key={text}
+                initial={{ x: -20, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ delay: index * 0.04, duration: 0.3 }}
+                whileHover={{ scale: 1.05 }}
+              >
+                <ListItemButton
+                  component={NavLink}
+                  to={path}
+                  sx={{
+                    borderRadius: 2,
+                    mb: 1,
+                    color: "#fff",
+                    "&.active": {
+                      background: "linear-gradient(300deg, #00c6ff, #007f00)",
+                      color: "#fff",
+                      boxShadow: "inset 0 0 10px rgba(255,255,255,0.3)",
+                    },
+                  }}
+                >
+                  <ListItemIcon sx={{ color: "inherit" }}>{icon}</ListItemIcon>
+                  <ListItemText
+                    primary={text}
+                    sx={{
+                      "& span": {
+                        fontWeight: "bold",
+                        fontSize: isMobile ? "0.8rem" : "0.95rem",
+                        letterSpacing: "0.5px",
+                      },
+                    }}
+                  />
+                </ListItemButton>
+              </motion.div>
+            ))}
+          </List>
+        </Box>
+      </motion.div>
+    </Drawer>
   );
 };
 
