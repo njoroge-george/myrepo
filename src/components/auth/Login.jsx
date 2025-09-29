@@ -1,5 +1,5 @@
-import { useState, useContext } from "react";
-import { loginUser } from "../../api/auth.jsx";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   TextField,
@@ -9,18 +9,21 @@ import {
   CircularProgress,
   Alert,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
-import { AuthContext } from "./AuthContext.jsx";
+
+import { loginUser } from "../../api/auth.jsx";
+import { useAuth } from "./AuthContext.jsx";
 
 export default function Login() {
   const [form, setForm] = useState({ username: "", password: "" });
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { setAuth } = useContext(AuthContext);
+  const { setAuth } = useAuth();
 
-  const handleChange = (e) =>
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -29,18 +32,23 @@ export default function Login() {
 
     try {
       const res = await loginUser(form);
-      const token = res?.data?.token;
-      if (!token) throw new Error("No token received");
+      const { token, refreshToken, user } = res.data;
+
+      if (!token || !user) throw new Error("Invalid login response");
 
       localStorage.setItem("token", token);
+      if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
 
-      const payload = JSON.parse(atob(token.split(".")[1]));
-      const { id, role, name } = payload;
+     setAuth((prev) => ({
+  ...prev,
+  token,
+}));
 
-      setAuth({ token, id, role, name });
-      navigate("/challenges"); // ✅ use your actual dashboard route
+      navigate("/challenges");
     } catch (err) {
-      setMessage(err.response?.data?.message || "Login failed.");
+      const errorMsg =
+        err.response?.data?.message || err.message || "Login failed.";
+      setMessage(errorMsg);
     } finally {
       setLoading(false);
     }

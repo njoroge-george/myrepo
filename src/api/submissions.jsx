@@ -1,23 +1,41 @@
-import apiClient from './apiClient';
+import apiClient from "./apiClient";
 
-const BASE = '/submissions';
-
-export const submitCode = async (payload) => {
-  return apiClient.post(`${BASE}`, payload);
+// 🚀 Submit code
+export const submitCode = (payload) => {
+  return apiClient.post("/submissions", payload);
 };
 
-export const getSubmissionsByCoder = async (coderId) => {
-  return apiClient.get(`${BASE}/coder/${coderId}`);
+// 📄 Get submissions by coder
+export const getSubmissionsByCoder = (coderId) => {
+  return apiClient.get(`/submissions/coder/${coderId}`);
 };
 
-export const getSubmissionsByChallenge = async (challengeId) => {
-  return apiClient.get(`${BASE}/challenge/${challengeId}`);
+// 📄 Get submissions by challenge
+export const getSubmissionsByChallenge = (challengeId) => {
+  return apiClient.get(`/submissions/challenge/${challengeId}`);
 };
 
-export const deleteSubmission = async (id) => {
-  return apiClient.delete(`${BASE}/${id}`);
+// 🔍 Get single submission
+export const getSubmissionById = (id) => {
+  return apiClient.get(`/submissions/${id}`);
 };
 
-export const getAnalytics = async () => {
-  return apiClient.get(`${BASE}/analytics`);
+// 📝 Review submission (admin only)
+export const reviewSubmission = (id, feedback, reviewedBy) => {
+  return apiClient.post(`/submissions/${id}/review`, { feedback, reviewedBy });
+};
+
+// 🔁 Retry submission
+export const retrySubmission = (id) => {
+  return apiClient.post(`/submissions/${id}/retry`);
+};
+
+// ❌ Delete submission (admin only)
+export const deleteSubmission = (id) => {
+  return apiClient.delete(`/submissions/${id}`);
+};
+
+// 📊 Get analytics (admin only)
+export const getSubmissionAnalytics = () => {
+  return apiClient.get("/submissions/analytics");
 };

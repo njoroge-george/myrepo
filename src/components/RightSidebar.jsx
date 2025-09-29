@@ -77,10 +77,10 @@ const RightSidebar = () => {
         "& .MuiDrawer-paper": {
           width: drawerWidth,
           boxSizing: "border-box",
-          background: "linear-gradient(90deg, #1583AA, #004081)",
+          background: "#ffffffff",
           backdropFilter: "blur(10px)",
-          color: "#fff",
-          borderLeft: "1px solid rgba(255,255,255,0.1)",
+          color: "#000",
+          borderLeft: "1px solid rgba(0,0,0,0.1)",
         },
       }}
     >
@@ -94,16 +94,16 @@ const RightSidebar = () => {
       >
         <Box sx={{ p: 2 }}>
           {/* Profile */}
-          <Card elevation={3} sx={{ mb: 2, borderRadius: 2, background: "#ffffff10" }}>
+          <Card elevation={3} sx={{ mb: 2, borderRadius: 2, background: "#ff0080ff" }}>
             <CardContent sx={{ display: "flex", alignItems: "center", gap: 2 }}>
               <Avatar sx={{ bgcolor: "primary.main", width: 50, height: 50 }}>
                 <AccountCircleIcon fontSize="large" />
               </Avatar>
               <Box>
-                <Typography variant="subtitle1" fontWeight="bold" color="#fff">
+                <Typography variant="subtitle1" fontWeight="bold" color="#000">
                   George Njoroge
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2" color="text.primary">
                   Admin
                 </Typography>
               </Box>
@@ -111,7 +111,7 @@ const RightSidebar = () => {
           </Card>
 
           {/* Chats */}
-          <Paper sx={{ p: 2, mb: 2, borderRadius: 2, background: "#ffffff10" }} elevation={2}>
+          <Paper sx={{ p: 2, mb: 2, borderRadius: 2, background: "#241b5aff" }} elevation={2}>
             <Typography variant="subtitle2" fontWeight="bold" gutterBottom>
               Chats
             </Typography>
@@ -138,14 +138,14 @@ const RightSidebar = () => {
                 ))}
               </List>
             ) : (
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant="body2" color="text.primary">
                 No new messages
               </Typography>
             )}
           </Paper>
 
           {/* Projects */}
-          <Paper sx={{ p: 2, mb: 2, borderRadius: 2, background: "#ffffff10" }} elevation={2}>
+          <Paper sx={{ p: 2, mb: 2, borderRadius: 2, background: "#241b5aff" }} elevation={2}>
             <Typography variant="subtitle2" fontWeight="bold" gutterBottom>
               Projects Progress
             </Typography>
@@ -174,15 +174,15 @@ const RightSidebar = () => {
           </Paper>
 
           {/* Quick Actions */}
-          <Paper sx={{ p: 2, borderRadius: 2, background: "#ffffff10" }} elevation={2}>
+          <Paper sx={{ p: 2, borderRadius: 2, background: "#241b5aff" }} elevation={2}>
             <Typography variant="subtitle2" fontWeight="bold" gutterBottom>
               Quick Actions
             </Typography>
             <Box display="flex" justifyContent="space-around" mt={1}>
-              <IconButton color="primary" onClick={handleSettingsClick}>
+              <IconButton color="primary" onClick={handleSettingsClick} sx={{background: "#1580ff1a", "&:hover": {background: "#1580ff33"}}}>
                 <SettingsIcon />
               </IconButton>
-              <IconButton color="error" onClick={handleLogout}>
+              <IconButton color="error" onClick={handleLogout} sx={{background: "#ff00001a", "&:hover": {background: "#ff000033"}}}>
                 <LogoutIcon />
               </IconButton>
             </Box>

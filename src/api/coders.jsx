@@ -1,12 +1,11 @@
-// src/api/coders.js
-import apiClient from './apiClient';
+import apiClient from "./apiClient";
 
-const BASE = '/coders';
+export const getRooms = () => apiClient.get("/rooms");
+export const createRoom = (room) => apiClient.post("/rooms", room);
+export const deleteRoom = (id) => apiClient.delete(`/rooms/${id}`);
 
-export const createCoder = async (data) => {
-  return apiClient.post(BASE, data);
-};
-
-export const getCoders = async () => {
-  return apiClient.get(BASE);
-};
+// coders
+export const addCoder = (coder) => apiClient.post("/coders", coder);
+export const toggleMute = (id) => apiClient.patch(`/coders/${id}/mute`);
+export const deleteCoder = (id) => apiClient.delete(`/coders/${id}`);
+export const getCoders = () => apiClient.get("/coders"); // <-- add this line!

@@ -28,9 +28,6 @@ import Accounts from "./pages/Accounts.jsx";
 import Coding from "./pages/Coding.jsx";
 import Settings from "./pages/Settings.jsx";
 import Profile from "./pages/Profile.jsx";
-import Challenges from "./pages/Challenges.jsx";
-import ChallengeView from "./components/coders/ChallengeView.jsx";
-
 // Auth
 import Register from "./components/auth/Register.jsx";
 import Login from "./components/auth/Login.jsx";
@@ -63,8 +60,6 @@ const protectedRoutes = [
   { path: "/coding", element: <Coding /> },
   { path: "/settings", element: <Settings /> },
   { path: "/profile", element: <Profile /> },
-  { path: "/challenges", element: <Challenges /> },
-  { path: "/challenges/:id", element: <ChallengeView /> }
 ];
 
 // 🧠 Auth bootstrap

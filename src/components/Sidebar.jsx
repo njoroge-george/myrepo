@@ -73,9 +73,8 @@ const Sidebar = ({ collapsed }) => {
         "& .MuiDrawer-paper": {
           width: drawerWidth,
           boxSizing: "border-box",
-          background: "linear-gradient(90deg, #1583AA, #004081)",
+          background: "#fff", // white background
           backdropFilter: "blur(10px)",
-          color: "#fff",
           borderRight: "1px solid rgba(255,255,255,0.1)",
         },
       }}
@@ -89,13 +88,16 @@ const Sidebar = ({ collapsed }) => {
         transition={{ duration: 0.5 }}
       >
         <Box sx={{ p: 2 }}>
+          {/* Heading - larger, bold, well-positioned */}
           <Typography
-            variant="h6"
+            variant="h4"
             sx={{
-              color: "#00eb3b",
-              mb: 2,
+              color: "#1580ff",
+              mb: 3,
               fontWeight: "bold",
-              textShadow: "0px 0px 6px rgba(255,255,255,0.4)",
+              fontSize: "1.8rem",
+              textAlign: "center",
+              paddingTop: 2,
             }}
           >
             Logistics
@@ -116,11 +118,14 @@ const Sidebar = ({ collapsed }) => {
                   sx={{
                     borderRadius: 2,
                     mb: 1,
-                    color: "#fff",
+                    backgroundColor: "#ADD8E6", // light blue button background
                     "&.active": {
-                      background: "linear-gradient(300deg, #00c6ff, #007f00)",
+                      background: "#00eb3b",
                       color: "#fff",
                       boxShadow: "inset 0 0 10px rgba(255,255,255,0.3)",
+                    },
+                    "&:hover": {
+                      backgroundColor: "#87CEFA", // hover color
                     },
                   }}
                 >
